@@ -49,7 +49,7 @@ function main () {
     const txtfacebook=document.getElementById('facebook');
     const txtwhatsaap=document.getElementById('whatsapp');
     const txtenlace=document.getElementById('enlace');
-    const enlace=`localhost:8080/PuzzleCam.html?${searchParams.get('sala')}&${searchParams.get('img')}&invitado=true`
+    const enlace=`http://144.22.174.111:6060/PuzzleCam.html?${searchParams.get('sala')}&${searchParams.get('img')}&invitado=true`
     txtenlace.innerText = enlace;
     txtfacebook.setAttribute('href',"https://www.facebook.com/sharer/sharer.php?u=https://"+enlace);
     txtwhatsaap.setAttribute('href',"https://api.whatsapp.com/send?text="+enlace);
