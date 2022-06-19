@@ -18,11 +18,30 @@ body {
     width: 400px;
     height: 400px;
     background: rgba(255, 255, 255, 0.6);
-    text-align: center;
-    padding: 5vmin;
     border: 1vmin rgba(0, 0, 0, 0.6) solid;
+    /* text-align: center; */
+    /* padding: 5vmin;
+    border: 1vmin rgba(0, 0, 0, 0.6) solid; */
     /* font-size: 7vmin; */
 }
+.contenido{
+    padding: 5vmin;
+}
+.footer{
+    
+    text-align: center; 
+    padding-left: 5vmin;
+    padding-right: 5vmin;
+}
+.nickname{
+    font: normal normal bold 16px/normal "Comic Sans MS", cursive, sans-serif;
+    text-align: center;
+    border-radius: 2vmin;
+}
+.enlace{
+    font-size: 1vmin;
+}
+
 
 button {
     font-size: 7vmin;
@@ -32,6 +51,13 @@ button {
     transition: 0.3s;
     border: none;
     border-radius: 1vmin;
+}
+.dimension{
+    width:60px;
+    height:40px;
+    font-size: 5vmin;
+    border-radius: 1vmin;
+    text-align: center;
 }
 
 button:hover {
@@ -63,13 +89,6 @@ select {
 #scoresContainer {
     height: 43vh;
     overflow: auto;
-}
-
-input {
-    font-size: 7vmin;
-    border-radius: 1vmin;
-    width: 50%;
-    text-align: center;
 }
 
 #helperCanvas {

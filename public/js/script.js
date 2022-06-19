@@ -46,10 +46,10 @@ function main () {
     uid = searchParams.get('sala');
     invitado=searchParams.get('invitado');
 
-    const txtenlace=document.getElementById('enlace');
     const txtfacebook=document.getElementById('facebook');
     const txtwhatsaap=document.getElementById('whatsapp');
-    const enlace="localhost:8080/PuzzleCam.html?"+searchParams.get('sala')+"&"+searchParams.get('img')+"&invitado=true";
+    const txtenlace=document.getElementById('enlace');
+    const enlace=`localhost:8080/PuzzleCam.html?${searchParams.get('sala')}&${searchParams.get('img')}&invitado=true`
     txtenlace.innerText = enlace;
     txtfacebook.setAttribute('href',"https://www.facebook.com/sharer/sharer.php?u=https://"+enlace);
     txtwhatsaap.setAttribute('href',"https://api.whatsapp.com/send?text="+enlace);
@@ -62,6 +62,8 @@ function main () {
     txtcolumna     = document.getElementById("columnas");
     winWidth= window.innerWidth;
     winHeight= window.innerHeight;
+
+    
     //console.log(window.innerWidth);
     //console.log(window.innerHeight);
 
@@ -153,8 +155,20 @@ function main () {
             handleResize ();
             initializePieces (SIZE.rows, SIZE.columns);
             updateGame ();
+            dimensionarMenu();
         }
     HELPER_CONTEXT.canvas.hidden =true;
+    
+}
+function dimensionarMenu(){
+    let resizer = SCALER*
+    Math.min(
+        winWidth / IMG.width, 
+        winHeight / IMG.height
+    );
+    divmenu=document.getElementById("menuItems");
+    divmenu.style.width =`${resizer*IMG.width}px`;
+    divmenu.style.height=`${resizer*IMG.height}px`;
 }
 function copyLink() {
     let copyText1 = document.getElementById('enlace')
