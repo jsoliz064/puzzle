@@ -7,31 +7,53 @@
         <script src="./js/script.js"></script>
         <script src="./socket.io/socket.io.js"></script>
 
+        <link rel="stylesheet" href="css/menu.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+   
     </head>
 
     <body onload="main()">
+        
         <canvas id="myCanvas"></canvas>
-        <canvas id="helperCanvas"></canvas>
+        <canvas id="helperCanvas" ></canvas>
+
+        <button onclick="atras()" class="carousel-control-prev" type="button">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button onclick="siguiente()" class="carousel-control-next" type="button">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+
         <div id="menuItems" class="menu">
             <div id="menu">
                 <div id="controls">
-                    <img src="./img/title.png" style="width:90%;"/>
-                    <br>
-                    <br>
-                    <label for="">filas:</label>
-                    <input id="filas" type="number" value="3" onchange="setDifficulty()">
-                    <label for="">columnas:</label>
-                    <input id="columnas" type="number" value="3" onchange="setDifficulty()">
-
-                    <!-- Difficulty <select id="difficulty" onchange="setDifficulty()">
-                        <option value="easy">Easy</option>
-                        <option value="medium">Medium</option>
-                        <option value="hard">Hard</option>
-                        <option value="insane">Insane</option>
-                    </select> -->
-                    <br>
-                    <br>
-                    <button onclick="restart()">Start</button>
+                    <div class="row">
+                        <div class="col">
+                            <label for="filas">filas:</label>
+                            <input id="filas" type="number" value="3" onchange="setDifficulty()">
+                        </div>
+                    </div>
+                    <div class="row m-2">
+                        <div class="col">
+                            <label for="columnas">columnas:</label>
+                            <input id="columnas" type="number" value="3" onchange="setDifficulty()">
+                        </div>
+                    </div>
+                    <div class="row m-2">
+                        <button onclick="restart()">Start</button>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <p id="enlace"></p>
+                        </div>
+                        <input type="button" class="btn btn-primary" onclick="copyLink()" data-toggle="tooltip"
+                                    title="Copy to Clipboard" value="Copy Link" readonly />
+                        <a id="facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://espai.es">Compartir en Facebook</a>
+                        <a id="whatsapp" href="https://api.whatsapp.com/send?text=escola%20inform%C3%A1tica%20i%20disseny%20https://espai.es">Compartir en Whatsapp</a>
+                    </div>
                 </div>
             </div>
         </div>

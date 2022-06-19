@@ -24,6 +24,8 @@ let invitado=false;
 let winWidth= null;
 let winHeight= null;
 
+let i= null;
+let imagenes=null;
 
 //initializePieces(row.getvalue, col.getvalue);
 
@@ -35,6 +37,27 @@ let keys = {
 
 
 function main () {
+    const searchParams=new URLSearchParams(window.location.search);
+    /* obtener sala del socket*/
+    if (!searchParams.has('sala')){
+        window.location='PuzzleCam.html';
+        throw new Error('No se encontro la sala')
+    }
+    uid = searchParams.get('sala');
+    invitado=searchParams.get('invitado');
+
+    const txtenlace=document.getElementById('enlace');
+    const txtfacebook=document.getElementById('facebook');
+    const txtwhatsaap=document.getElementById('whatsapp');
+    const enlace="localhost:8080/PuzzleCam.html?"+searchParams.get('sala')+"&"+searchParams.get('img')+"&invitado=true";
+    txtenlace.innerText = enlace;
+    txtfacebook.setAttribute('href',"https://www.facebook.com/sharer/sharer.php?u=https://"+enlace);
+    txtwhatsaap.setAttribute('href',"https://api.whatsapp.com/send?text="+enlace);
+     imagenes = ["img2.jpg", "img3.png","pikachu.png"];
+     i=0;
+    
+   
+
     txtfila     = document.getElementById("filas");
     txtcolumna     = document.getElementById("columnas");
     winWidth= window.innerWidth;
@@ -44,14 +67,7 @@ function main () {
 
     
     /* SOCKETS */
-    /* obtener sala del socket*/
-    const searchParams=new URLSearchParams(window.location.search);
-    if (!searchParams.has('sala')){
-        window.location='PuzzleCam.html';
-        throw new Error('No se encontro la sala')
-    }
-    uid = searchParams.get('sala');
-    invitado=searchParams.get('invitado');
+    
     socket=io();
     
     
@@ -129,15 +145,51 @@ function main () {
     
     HELPER_CANVAS = document.getElementById("helperCanvas");
     HELPER_CONTEXT = HELPER_CANVAS.getContext("2d");
-
+    const imagen=searchParams.get('img');
     addEventListeners ();
         IMG=new Image ();
-        IMG.src='./img/pikachu.png';
+        IMG.src='./img/'+imagen;
         IMG.onload=function () {
             handleResize ();
             initializePieces (SIZE.rows, SIZE.columns);
             updateGame ();
         }
+    HELPER_CONTEXT.canvas.hidden =true;
+}
+function copyLink() {
+    let copyText1 = document.getElementById('enlace')
+    var selection = window.getSelection();
+    var range = document.createRange();
+    range.selectNodeContents(copyText1);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    document.execCommand('copy');
+}
+
+function atras(){
+    if (i==0){
+        i=imagenes.length-1;
+    }else{
+        i--;
+    }
+    cargarImagen(imagenes[i]);
+}
+
+function siguiente() {
+    i++;
+    if (i==imagenes.length){
+        i=0;
+    }
+    cargarImagen(imagenes[i]);
+    
+}
+function cargarImagen(imagen){
+    IMG.src='./img/'+imagen;
+    IMG.onload=function () {
+        handleResize ();
+        //initializePieces (SIZE.rows, SIZE.columns);
+        updateGame ();
+    }
 }
 
 function initializePiecesSocket (rows, cols,piezas) {
