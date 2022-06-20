@@ -1,3 +1,4 @@
+
 html:focus-within {
     overscroll-behavior : smooth;
 }
@@ -15,54 +16,70 @@ body {
     right: 0;
     bottom: 0;
     left: 0;
-    width: 400px;
-    height: 400px;
+    width: 500px;
+    height: 500px;
     background: rgba(255, 255, 255, 0.6);
-    border: 1vmin rgba(0, 0, 0, 0.6) solid;
+    border: 1vmin rgb(0, 0, 0) solid;
     /* text-align: center; */
     /* padding: 5vmin;
     border: 1vmin rgba(0, 0, 0, 0.6) solid; */
     /* font-size: 7vmin; */
 }
+
 .contenido{
-    padding: 5vmin;
+    height: 100%;
 }
-.footer{
-    
-    text-align: center; 
+.contenido2{
+    bottom: 39%;
+    position: absolute;
     padding-left: 5vmin;
     padding-right: 5vmin;
 }
+.footer{
+  text-align: center;
+  width: 100%;
+  bottom: 0px;
+  position: absolute;
+}
 .nickname{
-    font: normal normal bold 16px/normal "Comic Sans MS", cursive, sans-serif;
+    font: normal normal bold 18px/normal "Comic Sans MS", cursive, sans-serif;
     text-align: center;
     border-radius: 2vmin;
 }
 .enlace{
     font-size: 1vmin;
 }
-
-
-button {
-    font-size: 7vmin;
-    background: rgb(123,146,196);
+.dimension{
+    width:50%;
+    height:90%;
+    font-size: 4vmin;
+    border-radius: 1vmin;
+    text-align: center;
+}
+.btn-start{
+    font-size: 3vmin;
+    background: rgb(37, 96, 224);
     color: white;
     cursor: pointer;
     transition: 0.3s;
     border: none;
-    border-radius: 1vmin;
-}
-.dimension{
-    width:60px;
-    height:40px;
-    font-size: 5vmin;
-    border-radius: 1vmin;
-    text-align: center;
+    border-radius: 2vmin;
 }
 
+/* button {
+    font-size: 7vmin;
+    background: rgb(37, 96, 224);
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+    border: none;
+    border-radius: 4vmin;
+} */
+
+
 button:hover {
-    background: orange;
-    color: black;
+    background: rgb(255, 0, 0);
+    color: rgb(253, 253, 253);
 }
 
 button:disabled {
@@ -86,6 +103,12 @@ select {
     transform: translate(-50%);
 }
 
+#jugadores {
+    position: absolute;
+    top: 50%;
+    right: 10%;
+}
+
 #scoresContainer {
     height: 43vh;
     overflow: auto;
@@ -95,4 +118,18 @@ select {
     margin-top: -210px;
     width: 28%;
     margin-left: -63px;
-    }
+}
+.cambiar-derecha{
+    background: rgb(0, 255, 76);
+    color: rgb(253, 253, 253);
+    margin-right: -80px;
+  height: 100%;
+  position: absolute;
+}
+.cambiar-izquierda{
+    background: rgb(0, 255, 76);
+    color: rgb(253, 253, 253);
+    margin-left: -80px;
+    height: 100%;
+    position: absolute;
+}

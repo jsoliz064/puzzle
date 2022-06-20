@@ -26,6 +26,7 @@ let winHeight= null;
 
 let i= null;
 let imagenes=null;
+let jugadores = [];
 
 //initializePieces(row.getvalue, col.getvalue);
 
@@ -45,19 +46,19 @@ function main () {
     }
     uid = searchParams.get('sala');
     invitado=searchParams.get('invitado');
-
+    if (invitado){
+        ocultarElementos();
+    }
     const txtfacebook=document.getElementById('facebook');
     const txtwhatsaap=document.getElementById('whatsapp');
     const txtenlace=document.getElementById('enlace');
-    const enlace=`http://144.22.174.111:6060/PuzzleCam.html?sala=${searchParams.get('sala')}&img=${searchParams.get('img')}&invitado=true`
+    const enlace="http://144.22.174.111:6060/PuzzleCam.html?sala="+searchParams.get('sala')+"&img="+searchParams.get('img')+"&invitado=true";
     txtenlace.innerText = enlace;
     txtfacebook.setAttribute('href',"https://www.facebook.com/sharer/sharer.php?u=https://"+enlace);
     txtwhatsaap.setAttribute('href',"https://api.whatsapp.com/send?text="+enlace);
-     imagenes = ["img2.jpg", "img3.png","pikachu.png"];
-     i=0;
+    imagenes = ["img2.jpg", "img3.png","pikachu.png"];
+    i=0;
     
-   
-
     txtfila     = document.getElementById("filas");
     txtcolumna     = document.getElementById("columnas");
     winWidth= window.innerWidth;
@@ -125,6 +126,7 @@ function main () {
     
     socket.on('pieza-seleccionada',({clickedColor})=>{
         SELECTED_PIECE=getPressedPieceByColorSocket(clickedColor);
+        SELECTED_PIECE.selected=true;
     });
 
     socket.on('pieza-movida',({mx,my})=>{
@@ -141,6 +143,14 @@ function main () {
         }
     });
 
+    socket.on('imagen-cambiada',({imagen})=>{
+        cargarImagen(imagen);
+    });
+
+    socket.on('jugador-agregado',({jugador})=>{
+        imprimir(jugador);
+    })
+
 
     CANVAS = document.getElementById("myCanvas");
     CONTEXT = CANVAS.getContext("2d");
@@ -155,10 +165,31 @@ function main () {
             handleResize ();
             initializePieces (SIZE.rows, SIZE.columns);
             updateGame ();
-            dimensionarMenu();
+            //dimensionarMenu();
         }
     HELPER_CONTEXT.canvas.hidden =true;
     
+}
+function ocultarElementos(){
+    const btncomenzar=document.getElementById("btnstart");
+    const footer=document.getElementById("footer");
+    const txtfilas=document.getElementById("filas")
+    const txtcolumna=document.getElementById("columnas")
+    const btnsiguiente=document.getElementById("btnsiguiente")
+    const btnatras=document.getElementById("btnatras")
+
+    btncomenzar.style.display="none";
+    footer.style.display="none";
+    txtfilas.setAttribute('readonly', 'true');
+    txtcolumna.setAttribute('readonly', 'true');
+    btnsiguiente.style.display="none";
+    btnatras.style.display="none";
+}
+function imprimir(jugador){
+    var html=`<p>${jugador}</p>`
+    var divjugador=document.getElementById('jugadores');
+    divjugador.innerHTML=html;
+    divjugador.scrollTop=divjugador.scrollHeight;
 }
 function dimensionarMenu(){
     let resizer = SCALER*
@@ -198,10 +229,12 @@ function siguiente() {
     
 }
 function cargarImagen(imagen){
+    if (!invitado){
+        socket.emit('cambiar-imagen',{uid,imagen});
+    }
     IMG.src='./img/'+imagen;
     IMG.onload=function () {
         handleResize ();
-        //initializePieces (SIZE.rows, SIZE.columns);
         updateGame ();
     }
 }
@@ -228,6 +261,7 @@ function initializePiecesSocket (rows, cols,piezas) {
                 piece.x=piezas[cnt].x;
                 piece.y=piezas[cnt].y;
                 piece.correct=piezas[cnt].correct;
+                piece.selected=piezas[cnt].selected;
             cnt++;
         }
     }
@@ -240,25 +274,11 @@ function setDifficulty () {
     let piezas=[];
     piezas=piezas.concat(PIECES);
     socket.emit('dimencionar',({uid,row,col,piezas}));
-    /* let diff = document.getElementById("difficulty").value;
-    switch (diff) {
-        case "easy":
-            initializePieces(3, 3);
-            break;
-        case "medium": 
-            initializePieces(5, 5);
-            break;
-        case "hard": 
-            initializePieces(10, 10);
-            break;
-        case "insane": 
-            initializePieces(40, 25);
-            break;
-    } */
 }
 
 
 function restart () {
+    
     if (!invitado){
         randomizePieces();
         let piezas=[];
@@ -267,7 +287,14 @@ function restart () {
     }
     START_TIME  = new Date().getTime();
     END_TIME = null;
+    agregarJugador();
     document.getElementById("menuItems").style.display = "none";
+}
+
+function agregarJugador(){
+    const jugador=document.getElementById("txtjugador").value;
+    imprimir(jugador);
+    socket.emit('add-jugador',{uid,jugador});
 }
 
 
@@ -350,7 +377,9 @@ function onMouseDown (evt) {
     SELECTED_PIECE = getPressedPieceByColor (evt, clickedColor);
     
     //SELECTED_PIECE = getPressedPiece (evt);
-    if (SELECTED_PIECE!=null) {
+    if (SELECTED_PIECE!=null  && !SELECTED_PIECE.correct) {
+        SELECTED_PIECE.selected=true;
+        
         socket.emit('seleccionar-pieza', { uid,clickedColor });
         const index = PIECES.indexOf(SELECTED_PIECE);
         if (index>-1) {
@@ -366,7 +395,7 @@ function onMouseDown (evt) {
 }
 
 function onMouseMove(evt) {
-    if (SELECTED_PIECE!=null) {
+    if (SELECTED_PIECE!=null && !SELECTED_PIECE.correct) {
         SELECTED_PIECE.x = evt.x - SELECTED_PIECE.offset.x;
         SELECTED_PIECE.y = evt.y - SELECTED_PIECE.offset.y;
         const mx=SELECTED_PIECE.x;
@@ -386,6 +415,7 @@ function onMouseUp() {
             showEndScreen();
         }
     }
+    SELECTED_PIECE.selected=false;
     SELECTED_PIECE = null;
 }
 
@@ -403,7 +433,7 @@ function getPressedPiece (loc) {
 
 function getPressedPieceByColor (loc,color) {
     for (let i = PIECES.length - 1; i >= 0; i--) {
-        if (PIECES[i].color==color){
+        if (PIECES[i].color==color && !PIECES[i].selected){
                 return PIECES[i];
         }
     }
@@ -432,8 +462,15 @@ function handleResize () {
         winWidth / IMG.width, 
         winHeight / IMG.height
     );
-    SIZE.width = resizer*IMG.width;
-    SIZE.height = resizer*IMG.height;
+    divmenu=document.getElementById("menuItems");
+    //divmenu.style.width =`${resizer*IMG.width}px`;
+    //divmenu.style.height=`${resizer*IMG.height}px`;
+
+    //SIZE.width = resizer*IMG.width;
+    //SIZE.height = resizer*IMG.height;
+    SIZE.width = divmenu.clientWidth;
+    SIZE.height = divmenu.clientHeight;
+
     SIZE.x = winWidth/2-SIZE.width/2;
     SIZE.y = winHeight/2-SIZE.height/2;
 }
@@ -546,6 +583,7 @@ class Piece {
         this.yCorrect = this.y;
         this.correct = true;
         this.color = color;
+        this.selected=false;
     }
     draw (context, useCam=true) {
         context.beginPath();

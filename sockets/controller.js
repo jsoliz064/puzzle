@@ -58,6 +58,18 @@ const socketController = async( socket = new Socket(), io ) => {
         }
     });
 
+    socket.on('cambiar-imagen', ({ uid, imagen }) => {
+        if ( uid ) {
+            socket.to( uid ).emit( 'imagen-cambiada', {imagen});
+        }
+    });
+
+    socket.on('add-jugador',({uid,jugador})=>{
+        if ( uid ) {
+            socket.to( uid ).emit( 'jugador-agregado', {jugador});
+        }
+    });
+
 }
 
 module.exports = {
