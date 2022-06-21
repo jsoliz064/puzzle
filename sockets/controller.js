@@ -51,6 +51,11 @@ const socketController = async( socket = new Socket(), io ) => {
             socket.to( uid ).emit( 'pieza-seleccionada', {clickedColor});
         }
     });
+    socket.on('soltar-pieza',({uid,color})=>{
+        if ( uid ) {
+            socket.to( uid ).emit( 'pieza-soltada', {color});
+        }
+    });
 
     socket.on('mover-pieza', ({ uid, mx,my }) => {
         if ( uid ) {

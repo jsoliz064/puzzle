@@ -128,6 +128,10 @@ function main () {
         SELECTED_PIECE=getPressedPieceByColorSocket(clickedColor);
         SELECTED_PIECE.selected=true;
     });
+    socket.on('pieza-soltada',({color})=>{
+        SELECTED_PIECE=getPressedPieceByColorSocket(color);
+        SELECTED_PIECE.selected=false;
+    });
 
     socket.on('pieza-movida',({mx,my})=>{
         SELECTED_PIECE.x = mx;
@@ -415,6 +419,8 @@ function onMouseUp() {
             showEndScreen();
         }
     }
+    const color=SELECTED_PIECE.color;
+    socket.emit('soltar-pieza',{uid,color});
     SELECTED_PIECE.selected=false;
     SELECTED_PIECE = null;
 }
@@ -554,18 +560,16 @@ function initializePieces (rows, cols) {
 
 
 function randomizePieces (rows, cols) {
+    divmenu=document.getElementById("menuItems");
     for (let i = 0; i < PIECES.length; i++) {
         const rx=Math.random();
         const ry=Math.random();
-
          let loc = {
-            x : rx*(CANVAS.width - PIECES[i].width),
-            y : ry*(CANVAS.height - PIECES[i].height)
+            x : rx*(winWidth/4)+rx*(winWidth/4)+winWidth/6,
+            y : ry*(winHeight/4)+ry*(winHeight/6)+winHeight/4
         }
         PIECES[i].x = loc.x;
         PIECES[i].y = loc.y;
-        PIECES[i].rx = rx;
-        PIECES[i].ry = ry;
         PIECES[i].correct = false;
     }
 }
