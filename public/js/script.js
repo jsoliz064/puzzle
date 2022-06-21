@@ -121,7 +121,6 @@ function main () {
     socket.on('pieza-seleccionada',({posicion})=>{
         //SELECTED_PIECE=getPressedPieceByColorSocket(clickedColor);
         const pieza=PIECES[posicion];
-        console.log(pieza.posicion);
         PIECES[posicion].selected=true;
     });
 
