@@ -131,6 +131,7 @@ function main () {
     socket.on('pieza-soltada',({color})=>{
         SELECTED_PIECE=getPressedPieceByColorSocket(color);
         SELECTED_PIECE.selected=false;
+        SELECTED_PIECE= null;
     });
 
     socket.on('pieza-movida',({mx,my})=>{
