@@ -21,6 +21,12 @@ let socket=null;
 let txtfila     = null;
 let txtcolumna     = null;
 let invitado=false;
+let winWidth= null;
+let winHeight= null;
+
+let i= null;
+let imagenes=null;
+let jugadores = [];
 
 //initializePieces(row.getvalue, col.getvalue);
 
@@ -32,17 +38,34 @@ let keys = {
 
 
 function main () {
-    txtfila     = document.getElementById("filas");
-    txtcolumna     = document.getElementById("columnas");
-    /* SOCKETS */
-    /* obtener sala del socket*/
     const searchParams=new URLSearchParams(window.location.search);
+    /* obtener sala del socket*/
     if (!searchParams.has('sala')){
         window.location='PuzzleCam.html';
         throw new Error('No se encontro la sala')
     }
     uid = searchParams.get('sala');
     invitado=searchParams.get('invitado');
+    if (invitado){
+        ocultarElementos();
+    }
+    const txtfacebook=document.getElementById('facebook');
+    const txtwhatsaap=document.getElementById('whatsapp');
+    const txtenlace=document.getElementById('enlace');
+    const enlace="http://144.22.174.111:6060/PuzzleCam.html?sala="+searchParams.get('sala')+"&img="+searchParams.get('img')+"&invitado=true";
+    txtenlace.innerText = enlace;
+    txtfacebook.setAttribute('href',"https://www.facebook.com/sharer/sharer.php?u=https://"+enlace);
+    txtwhatsaap.setAttribute('href',"https://api.whatsapp.com/send?text="+enlace);
+    imagenes = ["img2.jpg", "img3.png","pikachu.png"];
+    i=0;
+    
+    txtfila     = document.getElementById("filas");
+    txtcolumna     = document.getElementById("columnas");
+    winWidth= window.innerWidth;
+    winHeight= window.innerHeight;
+
+    /* SOCKETS */
+    
     socket=io();
     
     
@@ -70,20 +93,26 @@ function main () {
         socket.on('usuario-conectado',()=>{
             const row=txtfila.value;
             const col=txtcolumna.value;
+            const wx=winWidth;
+            const wy=winHeight;
             let piezas=[];
             piezas=piezas.concat(PIECES);
-            socket.emit('dimencionar',({uid,row,col,piezas}));
+            socket.emit('dimencionar',({uid,row,col,wx,wy,piezas}));
             //socket.emit('set-piezas',({uid,piezas}));
         });
     }
    
 
-    socket.on('dimencionado',({row,col,piezas})=>{
+    socket.on('dimencionado',({row,col,wx,wy,piezas})=>{
         txtfila.value=row;
         txtcolumna.value=col;
+        if (wx!=null && wy!=null){
+            winWidth=wx;
+            winHeight=wy;
+        }
+        
         handleResize ();
         initializePiecesSocket(row, col,piezas);
-        
     });
 
     socket.on('get-piezas',({piezas})=>{
@@ -92,15 +121,36 @@ function main () {
     
     socket.on('pieza-seleccionada',({clickedColor})=>{
         SELECTED_PIECE=getPressedPieceByColorSocket(clickedColor);
+        console.log(SELECTED_PIECE.posicion);
+        SELECTED_PIECE.selected=true;
+    });
+    socket.on('pieza-soltada',({color})=>{
+        SELECTED_PIECE=getPressedPieceByColorSocket(color);
+        if (SELECTED_PIECE && SELECTED_PIECE.isClose()) {
+            SELECTED_PIECE.snap();
+            if ( isComplete() && END_TIME == null) {
+                let now = new Date().getTime();
+                END_TIME = now;
+                setTimeout(playMelody, 500);
+                showEndScreen();
+            }
+        }
+        SELECTED_PIECE.selected=false;
+        SELECTED_PIECE= null;
     });
 
     socket.on('pieza-movida',({mx,my})=>{
         SELECTED_PIECE.x = mx;
         SELECTED_PIECE.y = my;
-        if (SELECTED_PIECE && SELECTED_PIECE.isClose()) {
-            SELECTED_PIECE.snap();
-        }
     });
+
+    socket.on('imagen-cambiada',({imagen})=>{
+        cargarImagen(imagen);
+    });
+
+    socket.on('jugador-agregado',({jugador})=>{
+        imprimir(jugador);
+    })
 
 
     CANVAS = document.getElementById("myCanvas");
@@ -108,18 +158,86 @@ function main () {
     
     HELPER_CANVAS = document.getElementById("helperCanvas");
     HELPER_CONTEXT = HELPER_CANVAS.getContext("2d");
-
+    const imagen=searchParams.get('img');
     addEventListeners ();
         IMG=new Image ();
-        IMG.src='./img/pikachu.png';
+        IMG.src='./img/'+imagen;
         IMG.onload=function () {
             handleResize ();
             initializePieces (SIZE.rows, SIZE.columns);
             updateGame ();
+            //dimensionarMenu();
         }
+    HELPER_CONTEXT.canvas.hidden =true;
     
-    console.log(PIECES);
+}
+function ocultarElementos(){
+    const btncomenzar=document.getElementById("btnstart");
+    const footer=document.getElementById("footer");
+    const txtfilas=document.getElementById("filas")
+    const txtcolumna=document.getElementById("columnas")
+    const btnsiguiente=document.getElementById("btnsiguiente")
+    const btnatras=document.getElementById("btnatras")
+
+    btncomenzar.style.display="none";
+    footer.style.display="none";
+    txtfilas.setAttribute('readonly', 'true');
+    txtcolumna.setAttribute('readonly', 'true');
+    btnsiguiente.style.display="none";
+    btnatras.style.display="none";
+}
+function imprimir(jugador){
+    var html=`<p>${jugador}</p>`
+    var divjugador=document.getElementById('jugadores');
+    divjugador.innerHTML=html;
+    divjugador.scrollTop=divjugador.scrollHeight;
+}
+function dimensionarMenu(){
+    let resizer = SCALER*
+    Math.min(
+        winWidth / IMG.width, 
+        winHeight / IMG.height
+    );
+    divmenu=document.getElementById("menuItems");
+    divmenu.style.width =`${resizer*IMG.width}px`;
+    divmenu.style.height=`${resizer*IMG.height}px`;
+}
+function copyLink() {
+    let copyText1 = document.getElementById('enlace')
+    var selection = window.getSelection();
+    var range = document.createRange();
+    range.selectNodeContents(copyText1);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    document.execCommand('copy');
+}
+
+function atras(){
+    if (i==0){
+        i=imagenes.length-1;
+    }else{
+        i--;
+    }
+    cargarImagen(imagenes[i]);
+}
+
+function siguiente() {
+    i++;
+    if (i==imagenes.length){
+        i=0;
+    }
+    cargarImagen(imagenes[i]);
     
+}
+function cargarImagen(imagen){
+    if (!invitado){
+        socket.emit('cambiar-imagen',{uid,imagen});
+    }
+    IMG.src='./img/'+imagen;
+    IMG.onload=function () {
+        handleResize ();
+        updateGame ();
+    }
 }
 
 function initializePiecesSocket (rows, cols,piezas) {
@@ -129,7 +247,7 @@ function initializePiecesSocket (rows, cols,piezas) {
     let cnt=0;
     for (let i = 0; i < SIZE.rows; i++) {
         for (let j = 0; j < SIZE.columns; j++) {
-             PIECES.push (new Piece (i,j,piezas[cnt].color));
+             PIECES.push (new Piece (i,j,piezas[cnt].color,piezas[cnt].posicion));
              cnt++;
         }
     }
@@ -144,6 +262,7 @@ function initializePiecesSocket (rows, cols,piezas) {
                 piece.x=piezas[cnt].x;
                 piece.y=piezas[cnt].y;
                 piece.correct=piezas[cnt].correct;
+                piece.selected=piezas[cnt].selected;
             cnt++;
         }
     }
@@ -156,25 +275,11 @@ function setDifficulty () {
     let piezas=[];
     piezas=piezas.concat(PIECES);
     socket.emit('dimencionar',({uid,row,col,piezas}));
-    /* let diff = document.getElementById("difficulty").value;
-    switch (diff) {
-        case "easy":
-            initializePieces(3, 3);
-            break;
-        case "medium": 
-            initializePieces(5, 5);
-            break;
-        case "hard": 
-            initializePieces(10, 10);
-            break;
-        case "insane": 
-            initializePieces(40, 25);
-            break;
-    } */
 }
 
 
 function restart () {
+    
     if (!invitado){
         randomizePieces();
         let piezas=[];
@@ -183,7 +288,14 @@ function restart () {
     }
     START_TIME  = new Date().getTime();
     END_TIME = null;
+    agregarJugador();
     document.getElementById("menuItems").style.display = "none";
+}
+
+function agregarJugador(){
+    const jugador=document.getElementById("txtjugador").value;
+    imprimir(jugador);
+    socket.emit('add-jugador',{uid,jugador});
 }
 
 
@@ -266,7 +378,10 @@ function onMouseDown (evt) {
     SELECTED_PIECE = getPressedPieceByColor (evt, clickedColor);
     
     //SELECTED_PIECE = getPressedPiece (evt);
-    if (SELECTED_PIECE!=null) {
+    if (SELECTED_PIECE!=null  && !SELECTED_PIECE.correct) {
+        console.log(SELECTED_PIECE.posicion);
+        SELECTED_PIECE.selected=true;
+
         socket.emit('seleccionar-pieza', { uid,clickedColor });
         const index = PIECES.indexOf(SELECTED_PIECE);
         if (index>-1) {
@@ -282,7 +397,7 @@ function onMouseDown (evt) {
 }
 
 function onMouseMove(evt) {
-    if (SELECTED_PIECE!=null) {
+    if (SELECTED_PIECE!=null && !SELECTED_PIECE.correct) {
         SELECTED_PIECE.x = evt.x - SELECTED_PIECE.offset.x;
         SELECTED_PIECE.y = evt.y - SELECTED_PIECE.offset.y;
         const mx=SELECTED_PIECE.x;
@@ -295,13 +410,16 @@ function onMouseMove(evt) {
 function onMouseUp() {
     if (SELECTED_PIECE && SELECTED_PIECE.isClose()) {
         SELECTED_PIECE.snap ();
-        if ( isComplete() && END_TIME == null ) {
+        if ( isComplete() && END_TIME == null) {
             let now = new Date().getTime();
             END_TIME = now;
             setTimeout(playMelody, 500);
             showEndScreen();
         }
     }
+    const color=SELECTED_PIECE.color;
+    socket.emit('soltar-pieza',{uid,color});
+    SELECTED_PIECE.selected=false;
     SELECTED_PIECE = null;
 }
 
@@ -319,7 +437,7 @@ function getPressedPiece (loc) {
 
 function getPressedPieceByColor (loc,color) {
     for (let i = PIECES.length - 1; i >= 0; i--) {
-        if (PIECES[i].color==color){
+        if (PIECES[i].color==color && !PIECES[i].selected){
                 return PIECES[i];
         }
     }
@@ -336,21 +454,24 @@ function getPressedPieceByColorSocket (color) {
 }
 
 function handleResize () {
-    CANVAS.width = window.innerWidth;
-    CANVAS.height = window.innerHeight;
     
-    HELPER_CANVAS.width = window.innerWidth;
-    HELPER_CANVAS.height = window.innerHeight;
+    CANVAS.width = winWidth;
+    CANVAS.height = winHeight;
+    
+    HELPER_CANVAS.width = winWidth;
+    HELPER_CANVAS.height = winHeight;
 
     let resizer = SCALER*
     Math.min(
-        window.innerWidth / IMG.width, 
-        window.innerHeight / IMG.height
+        winWidth / IMG.width, 
+        winHeight / IMG.height
     );
-    SIZE.width = resizer*IMG.width;
-    SIZE.height = resizer*IMG.height;
-    SIZE.x = window.innerWidth/2-SIZE.width/2;
-    SIZE.y = window.innerHeight/2-SIZE.height/2;
+    divmenu=document.getElementById("menuItems");
+    SIZE.width = divmenu.clientWidth;
+    SIZE.height = divmenu.clientHeight;
+
+    SIZE.x = winWidth/2-SIZE.width/2;
+    SIZE.y = winHeight/2-SIZE.height/2;
 }
 
 
@@ -393,7 +514,8 @@ function initializePieces (rows, cols) {
             while (uniqueRandomColors.includes(color)){
                 color=getRandomColor();
             }
-             PIECES.push (new Piece (i,j,color));
+
+             PIECES.push (new Piece (i,j,color,PIECES.length));
         }
     }
 
@@ -432,25 +554,23 @@ function initializePieces (rows, cols) {
 
 
 function randomizePieces (rows, cols) {
+    divmenu=document.getElementById("menuItems");
     for (let i = 0; i < PIECES.length; i++) {
         const rx=Math.random();
         const ry=Math.random();
-
          let loc = {
-            x : rx*(CANVAS.width - PIECES[i].width),
-            y : ry*(CANVAS.height - PIECES[i].height)
+            x : rx*(winWidth/4)+rx*(winWidth/4)+winWidth/6,
+            y : ry*(winHeight/4)+ry*(winHeight/6)+winHeight/4
         }
         PIECES[i].x = loc.x;
         PIECES[i].y = loc.y;
-        PIECES[i].rx = rx;
-        PIECES[i].ry = ry;
         PIECES[i].correct = false;
     }
 }
 
 
 class Piece {
-    constructor (rowIndex, colIndex, color) {
+    constructor (rowIndex, colIndex, color,indice) {
         this.rowIndex = rowIndex;
         this.colIndex = colIndex;
         this.x = SIZE.x+SIZE.width*this.colIndex/SIZE.columns;
@@ -461,6 +581,8 @@ class Piece {
         this.yCorrect = this.y;
         this.correct = true;
         this.color = color;
+        this.selected=false;
+        this.posicion=indice;
     }
     draw (context, useCam=true) {
         context.beginPath();

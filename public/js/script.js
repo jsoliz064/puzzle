@@ -64,18 +64,12 @@ function main () {
     winWidth= window.innerWidth;
     winHeight= window.innerHeight;
 
-    
-    //console.log(window.innerWidth);
-    //console.log(window.innerHeight);
-
-    
     /* SOCKETS */
     
     socket=io();
     
     
     socket.on('connect', () => {
-        console.log('conectado'+uid);
         socket.emit('obtener-llave',uid);
         if (invitado){
             //console.log("soy invitado");
@@ -124,21 +118,17 @@ function main () {
         initializePiecesSocket(txtfila.value,txtcolumna.value,piezas);
     });
     
-    socket.on('pieza-seleccionada',({clickedColor})=>{
-        SELECTED_PIECE=getPressedPieceByColorSocket(clickedColor);
-        SELECTED_PIECE.selected=true;
-    });
-    socket.on('pieza-soltada',({color})=>{
-        SELECTED_PIECE=getPressedPieceByColorSocket(color);
-        SELECTED_PIECE.selected=false;
-        SELECTED_PIECE= null;
+    socket.on('pieza-seleccionada',({posicion})=>{
+        //SELECTED_PIECE=getPressedPieceByColorSocket(clickedColor);
+        const pieza=PIECES[posicion];
+        console.log(pieza.posicion);
+        PIECES[posicion].selected=true;
     });
 
-    socket.on('pieza-movida',({mx,my})=>{
-        SELECTED_PIECE.x = mx;
-        SELECTED_PIECE.y = my;
-        if (SELECTED_PIECE && SELECTED_PIECE.isClose()) {
-            SELECTED_PIECE.snap();
+    socket.on('pieza-soltada',({posicion})=>{
+        //SELECTED_PIECE=getPressedPieceByColorSocket(color);
+        if (PIECES[posicion] && PIECES[posicion].isClose()) {
+            PIECES[posicion].snap();
             if ( isComplete() && END_TIME == null) {
                 let now = new Date().getTime();
                 END_TIME = now;
@@ -146,6 +136,20 @@ function main () {
                 showEndScreen();
             }
         }
+        PIECES[posicion].selected=false;
+    });
+
+    socket.on('pieza-movida',({posicion,mx,my})=>{
+        PIECES[posicion].x = mx;
+        PIECES[posicion].y = my;
+    });
+
+    socket.on('posicion-cambiada',({index})=>{
+        let pieza=PIECES[index];
+        PIECES[index].posicion=8;
+        PIECES.splice (index, 1);
+        actualizarPosicion(index);
+        PIECES.push(pieza);
     });
 
     socket.on('imagen-cambiada',({imagen})=>{
@@ -251,22 +255,21 @@ function initializePiecesSocket (rows, cols,piezas) {
     let cnt=0;
     for (let i = 0; i < SIZE.rows; i++) {
         for (let j = 0; j < SIZE.columns; j++) {
-             PIECES.push (new Piece (i,j,piezas[cnt].color));
+             PIECES.push (new Piece (i,j,piezas[cnt].color,piezas[cnt].posicion));
              cnt++;
         }
     }
     cnt=0;
     for (let i=0; i<SIZE.rows; i++){
         for (let j=0; j<SIZE.columns; j++){
-            const piece=PIECES[cnt];
-                piece.bottom=piezas[cnt].bottom;
-                piece.right=piezas[cnt].right;
-                piece.left=piezas[cnt].left;
-                piece.top=piezas[cnt].top;
-                piece.x=piezas[cnt].x;
-                piece.y=piezas[cnt].y;
-                piece.correct=piezas[cnt].correct;
-                piece.selected=piezas[cnt].selected;
+            PIECES[cnt].bottom=piezas[cnt].bottom;
+            PIECES[cnt].right=piezas[cnt].right;
+            PIECES[cnt].left=piezas[cnt].left;
+            PIECES[cnt].top=piezas[cnt].top;
+            PIECES[cnt].x=piezas[cnt].x;
+            PIECES[cnt].y=piezas[cnt].y;
+            PIECES[cnt].correct=piezas[cnt].correct;
+            PIECES[cnt].selected=piezas[cnt].selected;
             cnt++;
         }
     }
@@ -384,12 +387,15 @@ function onMouseDown (evt) {
     //SELECTED_PIECE = getPressedPiece (evt);
     if (SELECTED_PIECE!=null  && !SELECTED_PIECE.correct) {
         SELECTED_PIECE.selected=true;
-        
-        socket.emit('seleccionar-pieza', { uid,clickedColor });
         const index = PIECES.indexOf(SELECTED_PIECE);
         if (index>-1) {
+            SELECTED_PIECE.posicion=8;
             PIECES.splice (index, 1);
+            actualizarPosicion(index);
             PIECES.push (SELECTED_PIECE);
+            socket.emit('cambiar-posicion',{uid,index})
+            const posicion=SELECTED_PIECE.posicion;
+            socket.emit('seleccionar-pieza', { uid,posicion });
         }
         SELECTED_PIECE.offset = {
             x:evt.x-SELECTED_PIECE.x,
@@ -399,13 +405,20 @@ function onMouseDown (evt) {
     }
 }
 
+function actualizarPosicion(index){
+    for (let i = index; i < PIECES.length; i++) {
+        PIECES[i].posicion=PIECES[i].posicion-1;
+    }
+}
+
 function onMouseMove(evt) {
     if (SELECTED_PIECE!=null && !SELECTED_PIECE.correct) {
         SELECTED_PIECE.x = evt.x - SELECTED_PIECE.offset.x;
         SELECTED_PIECE.y = evt.y - SELECTED_PIECE.offset.y;
         const mx=SELECTED_PIECE.x;
         const my=SELECTED_PIECE.y;
-        socket.emit('mover-pieza',({uid,mx,my}));
+        const posicion=SELECTED_PIECE.posicion;
+        socket.emit('mover-pieza',({uid,posicion,mx,my}));
     }
 }
 
@@ -420,8 +433,8 @@ function onMouseUp() {
             showEndScreen();
         }
     }
-    const color=SELECTED_PIECE.color;
-    socket.emit('soltar-pieza',{uid,color});
+    const posicion=SELECTED_PIECE.posicion;
+    socket.emit('soltar-pieza',{uid,posicion});
     SELECTED_PIECE.selected=false;
     SELECTED_PIECE = null;
 }
@@ -470,11 +483,6 @@ function handleResize () {
         winHeight / IMG.height
     );
     divmenu=document.getElementById("menuItems");
-    //divmenu.style.width =`${resizer*IMG.width}px`;
-    //divmenu.style.height=`${resizer*IMG.height}px`;
-
-    //SIZE.width = resizer*IMG.width;
-    //SIZE.height = resizer*IMG.height;
     SIZE.width = divmenu.clientWidth;
     SIZE.height = divmenu.clientHeight;
 
@@ -513,16 +521,18 @@ function getRandomColor () {
 function initializePieces (rows, cols) {
     SIZE.rows = rows;
     SIZE.columns = cols;
-
     PIECES = [];
     const uniqueRandomColors=[];
+    let posicion=0;
     for (let i = 0; i < SIZE.rows; i++) {
         for (let j = 0; j < SIZE.columns; j++) {
             let color = getRandomColor();
             while (uniqueRandomColors.includes(color)){
                 color=getRandomColor();
             }
-             PIECES.push (new Piece (i,j,color));
+
+             PIECES.push (new Piece (i,j,color,posicion));
+             posicion=posicion+1;
         }
     }
 
@@ -577,7 +587,7 @@ function randomizePieces (rows, cols) {
 
 
 class Piece {
-    constructor (rowIndex, colIndex, color) {
+    constructor (rowIndex, colIndex, color,indice) {
         this.rowIndex = rowIndex;
         this.colIndex = colIndex;
         this.x = SIZE.x+SIZE.width*this.colIndex/SIZE.columns;
@@ -589,6 +599,7 @@ class Piece {
         this.correct = true;
         this.color = color;
         this.selected=false;
+        this.posicion=indice;
     }
     draw (context, useCam=true) {
         context.beginPath();

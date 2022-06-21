@@ -45,21 +45,25 @@ const socketController = async( socket = new Socket(), io ) => {
             socket.to( uid ).emit( 'get-piezas', {piezas});
         }
     });
-
-    socket.on('seleccionar-pieza', ({ uid, clickedColor }) => {
+    socket.on('cambiar-posicion', ({ uid, index }) => {
         if ( uid ) {
-            socket.to( uid ).emit( 'pieza-seleccionada', {clickedColor});
+            socket.to( uid ).emit( 'posicion-cambiada', {index});
         }
     });
-    socket.on('soltar-pieza',({uid,color})=>{
+    socket.on('seleccionar-pieza', ({ uid, posicion }) => {
         if ( uid ) {
-            socket.to( uid ).emit( 'pieza-soltada', {color});
+            socket.to( uid ).emit( 'pieza-seleccionada', {posicion});
+        }
+    });
+    socket.on('soltar-pieza',({uid,posicion})=>{
+        if ( uid ) {
+            socket.to( uid ).emit( 'pieza-soltada', {posicion});
         }
     });
 
-    socket.on('mover-pieza', ({ uid, mx,my }) => {
+    socket.on('mover-pieza', ({ uid,posicion, mx,my }) => {
         if ( uid ) {
-            socket.to( uid ).emit( 'pieza-movida', {mx,my});
+            socket.to( uid ).emit( 'pieza-movida', {posicion,mx,my});
         }
     });
 
