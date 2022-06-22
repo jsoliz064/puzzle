@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "bootstrap": "^5.2.0-beta1",
     "cloudinary": "^1.24.0",
     "connect-flash": "^0.1.1",
     "cors": "^2.8.5",

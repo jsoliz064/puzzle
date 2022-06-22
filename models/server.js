@@ -1,8 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const fileUpload = require('express-fileupload');
 const { socketController } = require('../sockets/controller');
-
 //agregado luego
 const flash = require('connect-flash');
 const session = require('express-session');
@@ -13,7 +11,6 @@ const { database } = require('../database/keys');
 const pool = require('../database/conexion');
 //MOGODB
 //const { dbConnection } = require('../database/config');
-
 
 class Server {
 
@@ -45,9 +42,7 @@ class Server {
         await pool;
     }
 
-
     middlewares() {
-
         // CORS
         this.app.use( cors() );
 
@@ -56,13 +51,7 @@ class Server {
 
         // Directorio Público
         this.app.use( express.static('public') );
-
-        // Fileupload - Carga de archivos
-        this.app.use( fileUpload({
-            useTempFiles : true,
-            tempFileDir : '/tmp/',
-            createParentPath: true
-        }));
+       
         //session de la bd
         this.app.use(session({
             secret: 'msm',
@@ -73,7 +62,6 @@ class Server {
         this.app.use(flash());
         this.app.use(passport.initialize());
         this.app.use(passport.session());
-
     }
 
     routes() {

@@ -62,6 +62,7 @@ function main () {
     txtwhatsaap.setAttribute('href',"https://api.whatsapp.com/send?text="+enlace);
 
     imagenes = ["img2.jpg", "img3.png","pikachu.png"];
+
     i=0;
 
     txtfila     = document.getElementById("filas");
@@ -165,29 +166,23 @@ function main () {
     })
 
     socket.on('partida-terminada',()=>{
-        //socket.emit('pasar-usuario',({uid,nombre,aciertos}));
-        //socket.emit('terminar-partida2',({uid}));
-       // USUARIOS.push({'usuario':user,'aciertos':acierto});
         showEndScreen();
     });
 
     socket.on('recibiendo-jugadores',(user,acierto)=>{
         socket.emit('pasar-usuario2',({uid,nombre,aciertos}));
-        //USUARIOS.push({'usuario':user,'aciertos':acierto});
-        console.log(user,acierto);
     });
     socket.on('recibiendo-jugadores2',(user,acierto)=>{
         console.log(user,acierto);
     });
   
 
-
     CANVAS = document.getElementById("myCanvas");
     CONTEXT = CANVAS.getContext("2d");
     
     HELPER_CANVAS = document.getElementById("helperCanvas");
     HELPER_CONTEXT = HELPER_CANVAS.getContext("2d");
-    const imagen=searchParams.get('img');
+    const imagen=imagenes[0];
     addEventListeners ();
         IMG=new Image ();
         IMG.src='./img/'+imagen;
@@ -324,7 +319,6 @@ function restart () {
 
     socket.emit('registrar-usuario',{uid,nombre,aciertos},({ok,user})=>{
         if (ok) {
-            console.log(user);
             usuario_id=user;
         }
     });

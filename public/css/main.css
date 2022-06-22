@@ -1,7 +1,76 @@
-#entorno{
-    display: block;
-    margin: 0 auto;
+body{
+    width: 100%;
+    height: 100%;
+    animation: changecolor 20s infinite;
 }
-#fondo{
-    opacity: 0.3;
+
+@keyframes changecolor {
+    0% {
+        background-color: rgb(22, 21, 22);
+    }
+    15% {
+        background-color: rgb(25, 6, 77);
+    }
+    30% {
+        background-color: rgb(75, 15, 117);
+    }
+    45% {
+        background-color: rgb(122, 25, 146);
+    }
+    60% {
+        background-color: rgb(75, 15, 117);
+    }
+    80% {
+        background-color: rgb(52, 12, 97);
+    }
+    100% {
+        background-color: rgb(22, 21, 22);
+    }
 }
+
+
+.centrar-horizontal{
+    width : 100%;
+    text-align : center;
+}
+.centrar-vertical{
+    height:100%;
+    vertical-align: middle;
+}
+
+.center-div{
+    position: absolute;
+    margin:auto;
+    top:0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 200px;
+    width: 200px;
+    border: 8px solid;
+    border-radius: 8px;
+}
+@media screen and (min-width: 350px){
+    .center-div{
+        height: 300px;
+        width: 300px;
+    }
+  }
+
+@media screen and (min-width: 450px){
+    .center-div{
+        height: 400px;
+        width: 400px;
+    }
+  }
+
+  @media screen and (min-width: 650px){
+    .center-div{
+        height: 500px;
+        width: 500px;
+    }
+  }
+
+
+  
+ 
