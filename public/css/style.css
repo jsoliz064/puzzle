@@ -8,6 +8,19 @@ body {
     overscroll-behavior : auto;
     font-family: Arial;
 }
+.centrar-horizontal{
+    width : 100%;
+    text-align : center;
+}
+.centrar-vertical{
+    height:100%;
+    vertical-align: middle;
+}
+
+.titulo{
+    padding:3vmin;
+    font: normal normal bold 50px/normal "Comic Sans MS", cursive, sans-serif;
+}
 
 .menu {
     position: absolute;
@@ -41,6 +54,39 @@ body {
   bottom: 0px;
   position: absolute;
 }
+.tabla{
+    height: 200px;
+    overflow-y: scroll;
+    background: rgba(255, 255, 255, 0.89);
+    border: rgb(0, 0, 0) solid;
+    border-radius: 2vmin;
+}
+.tabla::-webkit-scrollbar {
+    -webkit-appearance: none;
+}
+
+.tabla::-webkit-scrollbar:vertical {
+    width:10px;
+}
+
+.tabla::-webkit-scrollbar-button:increment,.tabla::-webkit-scrollbar-button {
+    display: none;
+} 
+
+/* .tabla::-webkit-scrollbar:horizontal {
+    height: 10px;
+} */
+
+.tabla::-webkit-scrollbar-thumb {
+    background-color: #afafaf;
+    border-radius: 20px;
+    border: 2px solid #f1f2f3;
+}
+
+.tabla::-webkit-scrollbar-track {
+    border-radius: 10px;  
+}
+
 .nickname{
     font: normal normal bold 18px/normal "Comic Sans MS", cursive, sans-serif;
     text-align: center;

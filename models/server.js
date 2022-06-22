@@ -23,12 +23,9 @@ class Server {
         this.server = require('http').createServer( this.app );
         this.io     = require('socket.io')( this.server );
         this.paths = {
-            auth:       '/api/auth',
-            buscar:     '/api/buscar',
-            categorias: '/api/categorias',
-            productos:  '/api/productos',
-            usuarios:   '/api/usuarios',
-            uploads:    '/api/uploads',
+            usuarios:   '/api/users',
+            sala:     '/api/salas',
+            users_salas: '/api/userssalas'
         }
 
 
@@ -80,13 +77,9 @@ class Server {
     }
 
     routes() {
-        this.app.use( this.paths.auth, require('../routes/auth'));
-        this.app.use( this.paths.buscar, require('../routes/buscar'));
-        this.app.use( this.paths.categorias, require('../routes/categorias'));
-        this.app.use( this.paths.productos, require('../routes/productos'));
+        this.app.use( this.paths.sala, require('../routes/sala'));
         this.app.use( this.paths.usuarios, require('../routes/usuarios'));
-        this.app.use( this.paths.uploads, require('../routes/uploads'));
-        
+        this.app.use( this.paths.users_salas, require('../routes/userssalas'));
     }
     sockets() {
 

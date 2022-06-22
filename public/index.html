@@ -1,90 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PUZZLE</title>
     <link rel="stylesheet" href="css/menu.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+   <!-- CSS only -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <!-- <script src="./js/inicio.js"></script> -->
+    <!-- JavaScript Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
 </head>
-<body>
 
-<div class="center-div">
-    <form action="PuzzleCam.html">
-        <div class="row">
-            <div class="col">
-                <div id="carouselExampleControls" class="carousel slide">
-                    <div class="carousel-inner">
-                      <div class="carousel-item active">
-                        <img id="imagen" src="./img/img2.jpg" class="d-block w-100" alt="...">
-                      </div>
+<div class="pos-f-t">
+    <div class="collapse" id="navbarToggleExternalContent">
+      <div class="bg-dark p-4">
+        <h4 class="text-white">Collapsed content</h4>
+        <span class="text-muted">Toggleable via the navbar brand.</span>
+      </div>
+    </div>
+    <nav class="navbar navbar-dark bg-dark">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </nav>
+  </div>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand mx-4" href="#">PUZZLE</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Link</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Dropdown
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="#">Action</a>
+            <a class="dropdown-item" href="#">Another action</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="#">Something else here</a>
+          </div>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link disabled" href="#">Disabled</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+<body>
+    <div class="center-div">
+        <form action="PuzzleCam.html">
+            <div class="row">
+                <div class="col">
+                    <div id="carouselExampleControls" class="carousel slide">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <img id="imagen" src="./img/img2.jpg" class="d-block w-100" alt="...">
+                            </div>
+                        </div>
+                        <button onclick="atras()" class="carousel-control-prev" type="button">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button onclick="siguiente()" class="carousel-control-next" type="button">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
                     </div>
-                    <button onclick="atras()" class="carousel-control-prev" type="button">
-                      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                      <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button onclick="siguiente()" class="carousel-control-next" type="button">
-                      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                      <span class="visually-hidden">Next</span>
-                    </button>
-                  </div>
+                </div>
             </div>
-        </div>
-        <div class="row justify-content-center">
-            <div class="col-auto bg-fanger m-2 text-center">
+            <div class="row justify-content-center">
+                <div class="col-auto bg-fanger m-2 text-center">
                     <input type="hidden" id="img" name="img" value="img2.jpg" type="text" class="form-control">
                     <input placeholder="Nombre del jugador" id="name" name="name" type="text" class="form-control">
                     <input type="hidden" id="txtSala2" name="sala" type="text" class="form-control">
                     <button type="submit" class="btn btn-primary m-2">
                         JUGAR
                     </button>
+                </div>
             </div>
-        </div>
-    </form>
-</div>
-    
-
-
-    <!-- <div class="row mt-5">
-
-        <div class="col-sm-6">
-            <h3>Enviar mensaje</h3>
-            <hr>
-            <input type="text"
-                   id="txtUid"
-                   class="form-control mb-2"
-                   placeholder="uid"
-                   autocomplete="off">
-
-            <input type="text"
-                   id="txtMensaje"
-                   class="form-control mb-2"
-                   placeholder="Mensaje"
-                   autocomplete="off">
-
-            
-           
-        </div>
-
-
+        </form>
     </div>
-     <button id="btnEnviar" class="btn btn-outline-danger">
-        Enviar sms
-    </button>
-    <form action="jugar.html">
-
-        <input id="txtSala" name="sala" type="text" class="form-control">
-        <br>
-        <button type="submit" class="btn btn-primary">
-            JUGAR
-        </button>
-    </form>
-    <br> -->
-   
-
-    
-
-     <script src="./js/inicio.js"></script>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+crossorigin="anonymous"></script>
 </html>

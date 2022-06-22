@@ -1,9 +1,28 @@
+//var request=require('request');
+
+const sala=require('../controllers/sala');
 
 const socketController = async( socket = new Socket(), io ) => {
 
     socket.on('obtener-llave', (uid) => {
         // Conectarlo a una sala especial
+       // if (!sala.verifSala({llave: uid})){
+         //   sala.crearSala({llave:uid});
+        //}
         socket.join( uid );
+    });
+
+    socket.on('registrar-usuario',({uid,nombre,aciertos},callback)=>{
+       /*  const user=sala.crearUsuario({uid,nombre,aciertos});
+        if (user){
+            callback({
+                ok:true,
+                user_id:user
+            });
+            console.log(user);
+        }else{
+           callback({ok:false}); 
+        } */
     });
     
     /* puzzle primera version */
@@ -78,6 +97,30 @@ const socketController = async( socket = new Socket(), io ) => {
             socket.to( uid ).emit( 'jugador-agregado', {jugador});
         }
     });
+
+    socket.on('terminar-partida',({uid})=>{
+        if ( uid ) {
+            socket.to( uid ).emit( 'partida-terminada');
+        }
+    });
+    socket.on('terminar-partida2',({uid})=>{
+        if ( uid ) {
+            socket.to( uid ).emit( 'partida-terminada');
+        }
+    });
+
+    socket.on('pasar-usuario',({uid,nombre,aciertos})=>{
+        if ( uid ) {
+            socket.to( uid ).emit( 'recibiendo-jugadores', {nombre,aciertos});
+        }
+    });
+    socket.on('pasar-usuario2',({uid,nombre,aciertos})=>{
+        if ( uid ) {
+            socket.to( uid ).emit( 'recibiendo-jugadores2', {nombre,aciertos});
+        }
+    });
+  
+
 
 }
 

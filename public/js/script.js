@@ -1,4 +1,3 @@
-let VIDEO = null;
 let IMG = null;
 let CANVAS = null;
 let CONTEXT = null;
@@ -7,6 +6,7 @@ let HELPER_CONTEXT = null;
 let SCALER = 0.6;
 let SIZE = {x:0, y:0, width:0, height:0, rows:3, columns:3};
 let PIECES = [];
+let USUARIOS=[];
 let SELECTED_PIECE = null;
 let START_TIME = null;
 let END_TIME = null;
@@ -27,7 +27,10 @@ let winHeight= null;
 let i= null;
 let imagenes=null;
 let jugadores = [];
-
+let nombre= null;
+let aciertos=null;
+let usuario_id = null;
+let sala_id= null;
 //initializePieces(row.getvalue, col.getvalue);
 
 let keys = {
@@ -38,14 +41,15 @@ let keys = {
 
 
 function main () {
+    /* document.getElementById("menuItems").style.display = "none";
+    showEndScreen(); */
     const searchParams=new URLSearchParams(window.location.search);
     /* obtener sala del socket*/
-    if (!searchParams.has('sala')){
-        window.location='PuzzleCam.html';
-        throw new Error('No se encontro la sala')
-    }
+    
     uid = searchParams.get('sala');
     invitado=searchParams.get('invitado');
+    
+
     if (invitado){
         ocultarElementos();
     }
@@ -56,11 +60,14 @@ function main () {
     txtenlace.innerText = enlace;
     txtfacebook.setAttribute('href',"https://www.facebook.com/sharer/sharer.php?u=https://"+enlace);
     txtwhatsaap.setAttribute('href',"https://api.whatsapp.com/send?text="+enlace);
+
     imagenes = ["img2.jpg", "img3.png","pikachu.png"];
     i=0;
-    
+
     txtfila     = document.getElementById("filas");
     txtcolumna     = document.getElementById("columnas");
+
+
     winWidth= window.innerWidth;
     winHeight= window.innerHeight;
 
@@ -69,10 +76,9 @@ function main () {
     socket=io();
     
     
-    socket.on('connect', () => {
+    socket.on('connect', (callback) => {
         socket.emit('obtener-llave',uid);
         if (invitado){
-            //console.log("soy invitado");
             socket.emit('nuevo-usuario',uid);
         }
     });
@@ -97,7 +103,6 @@ function main () {
             let piezas=[];
             piezas=piezas.concat(PIECES);
             socket.emit('dimencionar',({uid,row,col,wx,wy,piezas}));
-            //socket.emit('set-piezas',({uid,piezas}));
         });
     }
    
@@ -119,19 +124,18 @@ function main () {
     });
     
     socket.on('pieza-seleccionada',({posicion})=>{
-        //SELECTED_PIECE=getPressedPieceByColorSocket(clickedColor);
-        const pieza=PIECES[posicion];
         PIECES[posicion].selected=true;
     });
 
     socket.on('pieza-soltada',({posicion})=>{
-        //SELECTED_PIECE=getPressedPieceByColorSocket(color);
         if (PIECES[posicion] && PIECES[posicion].isClose()) {
             PIECES[posicion].snap();
+            
             if ( isComplete() && END_TIME == null) {
                 let now = new Date().getTime();
                 END_TIME = now;
                 setTimeout(playMelody, 500);
+                PIECES[posicion].selected=false;
                 showEndScreen();
             }
         }
@@ -144,8 +148,9 @@ function main () {
     });
 
     socket.on('posicion-cambiada',({index})=>{
+        
+        PIECES[index].posicion=PIECES.length - 1;
         let pieza=PIECES[index];
-        PIECES[index].posicion=8;
         PIECES.splice (index, 1);
         actualizarPosicion(index);
         PIECES.push(pieza);
@@ -158,6 +163,23 @@ function main () {
     socket.on('jugador-agregado',({jugador})=>{
         imprimir(jugador);
     })
+
+    socket.on('partida-terminada',()=>{
+        //socket.emit('pasar-usuario',({uid,nombre,aciertos}));
+        //socket.emit('terminar-partida2',({uid}));
+       // USUARIOS.push({'usuario':user,'aciertos':acierto});
+        showEndScreen();
+    });
+
+    socket.on('recibiendo-jugadores',(user,acierto)=>{
+        socket.emit('pasar-usuario2',({uid,nombre,aciertos}));
+        //USUARIOS.push({'usuario':user,'aciertos':acierto});
+        console.log(user,acierto);
+    });
+    socket.on('recibiendo-jugadores2',(user,acierto)=>{
+        console.log(user,acierto);
+    });
+  
 
 
     CANVAS = document.getElementById("myCanvas");
@@ -199,6 +221,18 @@ function imprimir(jugador){
     divjugador.innerHTML=html;
     divjugador.scrollTop=divjugador.scrollHeight;
 }
+
+function imprimir2(jugador,puntaje){
+    var html=`<p>${jugador}</p>`
+    var html2=`<tr>
+    <th scope="row">1</th>
+    <td id="tbusuario">${jugador}</td>
+    <td id="tbaciertos">${puntaje}</td>
+  </tr>`
+    var divjugador=document.getElementById('tbjugadores');
+    divjugador.innerHTML=html;
+}
+
 function dimensionarMenu(){
     let resizer = SCALER*
     Math.min(
@@ -285,7 +319,20 @@ function setDifficulty () {
 
 
 function restart () {
-    
+    nombre=document.getElementById("txtjugador").value;
+    aciertos=0;
+
+    socket.emit('registrar-usuario',{uid,nombre,aciertos},({ok,user})=>{
+        if (ok) {
+            console.log(user);
+            usuario_id=user;
+        }
+    });
+
+    if (SELECTED_PIECE!=null){
+        SELECTED_PIECE.selected=false;
+        SELECTED_PIECE = null;
+    }
     if (!invitado){
         randomizePieces();
         let piezas=[];
@@ -387,14 +434,14 @@ function onMouseDown (evt) {
     if (SELECTED_PIECE!=null  && !SELECTED_PIECE.correct) {
         SELECTED_PIECE.selected=true;
         const index = PIECES.indexOf(SELECTED_PIECE);
-        if (index>-1) {
-            SELECTED_PIECE.posicion=8;
-            PIECES.splice (index, 1);
-            actualizarPosicion(index);
-            PIECES.push (SELECTED_PIECE);
-            socket.emit('cambiar-posicion',{uid,index})
-            const posicion=SELECTED_PIECE.posicion;
-            socket.emit('seleccionar-pieza', { uid,posicion });
+        if (index>-1 ) {
+                SELECTED_PIECE.posicion=PIECES.length-1;
+                PIECES.splice (index, 1);
+                actualizarPosicion(index);
+                PIECES.push (SELECTED_PIECE);
+                socket.emit('cambiar-posicion',{uid,index});
+                const posicion=SELECTED_PIECE.posicion;
+                socket.emit('seleccionar-pieza', { uid,posicion });
         }
         SELECTED_PIECE.offset = {
             x:evt.x-SELECTED_PIECE.x,
@@ -425,17 +472,27 @@ function onMouseMove(evt) {
 function onMouseUp() {
     if (SELECTED_PIECE && SELECTED_PIECE.isClose()) {
         SELECTED_PIECE.snap ();
+        aciertos=aciertos+1;
         if ( isComplete() && END_TIME == null) {
             let now = new Date().getTime();
             END_TIME = now;
             setTimeout(playMelody, 500);
+            //terminar partida
+            const posicion=SELECTED_PIECE.posicion;
+            SELECTED_PIECE.selected=false;
+            SELECTED_PIECE = null;
+            socket.emit('soltar-pieza',{uid,posicion});
+            USUARIOS.push({'usuario':nombre,'aciertos':aciertos});
+            socket.emit('terminar-partida',{uid});
             showEndScreen();
         }
     }
-    const posicion=SELECTED_PIECE.posicion;
-    socket.emit('soltar-pieza',{uid,posicion});
-    SELECTED_PIECE.selected=false;
-    SELECTED_PIECE = null;
+    if (SELECTED_PIECE){
+        const posicion=SELECTED_PIECE.posicion;
+        SELECTED_PIECE.selected=false;
+        SELECTED_PIECE = null;
+        socket.emit('soltar-pieza',{uid,posicion});
+    }
 }
 
 
@@ -583,7 +640,12 @@ function randomizePieces (rows, cols) {
         PIECES[i].correct = false;
     }
 }
-
+class Usuario{
+    constructor (nombre){
+        this.nombre=nombre;
+        this.puntaje=0;
+    }
+}
 
 class Piece {
     constructor (rowIndex, colIndex, color,indice) {
@@ -769,7 +831,7 @@ class Piece {
         this.x = this.xCorrect;
         this.y = this.yCorrect;
         this.correct = true;
-        POP_SOUND.play();
+        //POP_SOUND.play();
     }
 }
 
@@ -823,8 +885,11 @@ function showEndScreen() {
     const time = Math.floor((END_TIME-START_TIME)/1000);
     document.getElementById("scoreValue").innerHTML="Score: "+time;
     document.getElementById("endScreen").style.display="block";
-    document.getElementById('saveBtn').innerHTML="Save";
-    document.getElementById('saveBtn').disable=false;
+    document.getElementById("tbusuario").innerText=nombre;
+    document.getElementById("tbaciertos").innerText=aciertos;
+
+    /* document.getElementById('saveBtn').innerHTML="Save"; */
+    /* document.getElementById('saveBtn').disable=false; */
 }
 
 function showMenu() {
