@@ -4,9 +4,9 @@ module.exports = {
     database: {
         connectionLimit: 10,
         host: 'localhost',
-        port:3306,
+        port: 3306,
         user: 'root',
-        password: '',
+        password: '1234',
         database: 'sw1'
     }
 
