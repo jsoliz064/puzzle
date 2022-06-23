@@ -1,12 +1,12 @@
-
 html:focus-within {
-    overscroll-behavior : smooth;
+    overscroll-behavior: smooth;
 }
+
 body {
-    margin : 0;
-    overflow : hidden;
-    overscroll-behavior : auto;
-    /* animation: changecolor 30s infinite; */
+    margin: 0;
+    overflow: hidden;
+    overscroll-behavior: auto;
+    animation: changecolor 30s infinite;
 }
 
 
@@ -14,85 +14,98 @@ body {
     0% {
         background-color: rgb(22, 21, 22);
     }
+
     15% {
         background-color: rgb(25, 6, 77);
     }
+
     30% {
         background-color: rgb(75, 15, 117);
     }
+
     45% {
         background-color: rgb(122, 25, 146);
     }
+
     60% {
         background-color: rgb(75, 15, 117);
     }
+
     80% {
         background-color: rgb(52, 12, 97);
     }
+
     100% {
         background-color: rgb(22, 21, 22);
     }
 }
-.centrar-horizontal{
-    width : 100%;
-    text-align : center;
+
+.centrar-horizontal {
+    width: 100%;
+    text-align: center;
 }
-.centrar-vertical{
-    height:100%;
+
+.centrar-vertical {
+    height: 100%;
     vertical-align: middle;
 }
 
-.titulo{
-    padding:3vmin;
+.titulo {
+    padding: 3vmin;
     font: normal normal bold 50px/normal "Comic Sans MS", cursive, sans-serif;
 }
 
 .menu {
     position: absolute;
-    margin:auto;
+    margin: auto;
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
-    width: 500px;
-    height: 500px;
+    width: 300px;
+    height: 300px;
     background: rgba(255, 255, 255, 0.6);
     border: 1vmin rgb(0, 0, 0) solid;
 }
 
-.contenido{
+.contenido {
     height: 100%;
 }
-.contenido2{
+
+.contenido2 {
     bottom: 39%;
     position: absolute;
     padding-left: 5vmin;
     padding-right: 5vmin;
 }
-.footer{
-  text-align: center;
-  width: 100%;
-  bottom: 0px;
-  position: absolute;
+
+.footer {
+    text-align: center;
+    width: 100%;
+    bottom: 0px;
+    position: absolute;
 }
-.tabla{
+
+.tabla {
     height: 200px;
     overflow-y: scroll;
     background: rgba(255, 255, 255, 0.89);
     border: rgb(0, 0, 0) solid;
     border-radius: 2vmin;
 }
+
 .tabla::-webkit-scrollbar {
     -webkit-appearance: none;
 }
 
 .tabla::-webkit-scrollbar:vertical {
-    width:10px;
+    width: 10px;
 }
 
-.tabla::-webkit-scrollbar-button:increment,.tabla::-webkit-scrollbar-button {
+.tabla::-webkit-scrollbar-button:increment,
+.tabla::-webkit-scrollbar-button {
     display: none;
-} 
+}
 
 /* .tabla::-webkit-scrollbar:horizontal {
     height: 10px;
@@ -105,25 +118,28 @@ body {
 }
 
 .tabla::-webkit-scrollbar-track {
-    border-radius: 10px;  
+    border-radius: 10px;
 }
 
-.nickname{
+.nickname {
     font: normal normal bold 18px/normal "Comic Sans MS", cursive, sans-serif;
     text-align: center;
     border-radius: 2vmin;
 }
-.enlace{
+
+.enlace {
     font-size: 1vmin;
 }
-.dimension{
-    width:50%;
-    height:90%;
+
+.dimension {
+    width: 50%;
+    height: 90%;
     font-size: 4vmin;
     border-radius: 1vmin;
     text-align: center;
 }
-.btn-start{
+
+.btn-start {
     font-size: 3vmin;
     background: rgb(37, 96, 224);
     color: white;
@@ -132,14 +148,16 @@ body {
     border: none;
     border-radius: 2vmin;
 }
-.cambiar-derecha{
+
+.cambiar-derecha {
     background: rgb(0, 255, 76);
     color: rgb(253, 253, 253);
     margin-right: -80px;
-  height: 100%;
-  position: absolute;
+    height: 100%;
+    position: absolute;
 }
-.cambiar-izquierda{
+
+.cambiar-izquierda {
     background: rgb(0, 255, 76);
     color: rgb(253, 253, 253);
     margin-left: -80px;
@@ -156,6 +174,33 @@ body {
     border: none;
     border-radius: 4vmin;
 } */
+@media screen and (min-width: 350px) {
+    .menu {
+        height: 250px;
+        width: 250px;
+    }
+}
+
+@media screen and (min-width: 450px) {
+    .menu {
+        height: 400px;
+        width: 400px;
+    }
+}
+
+@media screen and (min-width: 600px) {
+    .menu {
+        height: 400px;
+        width: 400px;
+    }
+}
+
+@media screen and (min-width: 800px) {
+    .menu {
+        height: 500px;
+        width: 500px;
+    }
+}
 
 
 button:hover {
@@ -224,4 +269,3 @@ select {
         width: 500px;
     }
   } */
-       

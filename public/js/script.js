@@ -30,7 +30,7 @@ let jugadores = [];
 let nombre= null;
 let aciertos=null;
 let usuario_id = null;
-let sala_id= null;
+let sala= null;
 //initializePieces(row.getvalue, col.getvalue);
 
 let keys = {
@@ -41,6 +41,32 @@ let keys = {
 
 
 function main () {
+    /* window.onresize=function () {
+        winWidth= window.innerWidth;
+        winHeight= window.innerHeight;
+        dimensionarMenu();
+        divmenu=document.getElementById("menuItems");
+        
+        CANVAS.width = winWidth;
+        CANVAS.height = winHeight;
+        
+        HELPER_CANVAS.width = winWidth;
+        HELPER_CANVAS.height = winHeight;
+
+        let resizer = SCALER*
+        Math.min(
+            winWidth / IMG.width, 
+            winHeight / IMG.height
+        );
+        SIZE.width = resizer*IMG.width;
+        SIZE.height = resizer*IMG.height;
+        SIZE.x = winWidth/2-SIZE.width/2;
+        SIZE.y = winHeight/2-SIZE.height/2;
+        console.log(SIZE);
+        for (let i = 0; i < PIECES.length; i++){
+            PIECES[i].reconstruir(PIECES[i].x,PIECES[i].y);
+        }
+    } */
     /* document.getElementById("menuItems").style.display = "none";
     showEndScreen(); */
     const searchParams=new URLSearchParams(window.location.search);
@@ -61,8 +87,7 @@ function main () {
     txtfacebook.setAttribute('href',"https://www.facebook.com/sharer/sharer.php?u=https://"+enlace);
     txtwhatsaap.setAttribute('href',"https://api.whatsapp.com/send?text="+enlace);
 
-    imagenes = ["img2.jpg", "img3.png","pikachu.png"];
-
+    imagenes = ["img8.png","img1.png","img2.jpg","img3.png","img4.png","img5.png","img6.png","img7.png"];
     i=0;
 
     txtfila     = document.getElementById("filas");
@@ -77,8 +102,17 @@ function main () {
     socket=io();
     
     
-    socket.on('connect', (callback) => {
-        socket.emit('obtener-llave',uid);
+    socket.on('connect', () => {
+        socket.emit('obtener-llave',uid,(sala_id)=>{
+            console.log(sala_id);
+           /*  if (ok){
+                console.log('sala creada en la bd');
+            }else{
+                console.log('sala ya creada en la bd');
+            }
+                console.log(sala_id); */
+        });
+
         if (invitado){
             socket.emit('nuevo-usuario',uid);
         }
@@ -103,21 +137,31 @@ function main () {
             const wy=winHeight;
             let piezas=[];
             piezas=piezas.concat(PIECES);
-            socket.emit('dimencionar',({uid,row,col,wx,wy,piezas}));
+            const img=i;
+            socket.emit('dimencionar',({uid,row,col,wx,wy,piezas,img}));
         });
     }
    
 
-    socket.on('dimencionado',({row,col,wx,wy,piezas})=>{
+    socket.on('dimencionado',({row,col,wx,wy,piezas,img})=>{
+        if (img==null){
+            img=0;
+        }
+        i=img;
         txtfila.value=row;
         txtcolumna.value=col;
         if (wx!=null && wy!=null){
             winWidth=wx;
             winHeight=wy;
         }
+        const imagen=imagenes[i];
+        IMG=new Image ();
+        IMG.src='./img/'+imagen;
+        IMG.onload=function () {
+            handleResize ();
+            initializePiecesSocket(row, col,piezas);
+        }
         
-        handleResize ();
-        initializePiecesSocket(row, col,piezas);
     });
 
     socket.on('get-piezas',({piezas})=>{
@@ -175,6 +219,17 @@ function main () {
     socket.on('recibiendo-jugadores2',(user,acierto)=>{
         console.log(user,acierto);
     });
+
+    socket.on('partida-reiniciada',()=>{
+        document.getElementById("endScreen").style.display="none";
+        document.getElementById("menuItems").style.display="block";
+        document.getElementById("txtjugador").value=nombre;
+
+    });
+
+    socket.on('pagina-recargada',()=>{
+        location.reload();
+    });
   
 
     CANVAS = document.getElementById("myCanvas");
@@ -182,7 +237,7 @@ function main () {
     
     HELPER_CANVAS = document.getElementById("helperCanvas");
     HELPER_CONTEXT = HELPER_CANVAS.getContext("2d");
-    const imagen=imagenes[0];
+    const imagen=imagenes[i];
     addEventListeners ();
         IMG=new Image ();
         IMG.src='./img/'+imagen;
@@ -195,6 +250,12 @@ function main () {
     HELPER_CONTEXT.canvas.hidden =true;
     
 }
+
+function recargar(){
+    socket.emit('recargar-pagina',({uid}));
+    location.reload();
+}
+
 function ocultarElementos(){
     const btncomenzar=document.getElementById("btnstart");
     const footer=document.getElementById("footer");
@@ -203,12 +264,14 @@ function ocultarElementos(){
     const btnsiguiente=document.getElementById("btnsiguiente")
     const btnatras=document.getElementById("btnatras")
 
+
     btncomenzar.style.display="none";
     footer.style.display="none";
     txtfilas.setAttribute('readonly', 'true');
     txtcolumna.setAttribute('readonly', 'true');
     btnsiguiente.style.display="none";
     btnatras.style.display="none";
+    document.getElementById("btnRecargar").style.display="none";
 }
 function imprimir(jugador){
     var html=`<p>${jugador}</p>`
@@ -314,14 +377,16 @@ function setDifficulty () {
 
 
 function restart () {
-    nombre=document.getElementById("txtjugador").value;
+    if (nombre==null){
+        nombre=document.getElementById("txtjugador").value;
+    }
     aciertos=0;
 
-    socket.emit('registrar-usuario',{uid,nombre,aciertos},({ok,user})=>{
+  /*   socket.emit('registrar-usuario',{uid,nombre,aciertos},({ok,user})=>{
         if (ok) {
             usuario_id=user;
         }
-    });
+    }); */
 
     if (SELECTED_PIECE!=null){
         SELECTED_PIECE.selected=false;
@@ -337,6 +402,7 @@ function restart () {
     END_TIME = null;
     agregarJugador();
     document.getElementById("menuItems").style.display = "none";
+    
 }
 
 function agregarJugador(){
@@ -464,7 +530,7 @@ function onMouseMove(evt) {
 
 
 function onMouseUp() {
-    if (SELECTED_PIECE && SELECTED_PIECE.isClose()) {
+    if (SELECTED_PIECE && SELECTED_PIECE.isClose() && SELECTED_PIECE.selected) {
         SELECTED_PIECE.snap ();
         aciertos=aciertos+1;
         if ( isComplete() && END_TIME == null) {
@@ -481,7 +547,7 @@ function onMouseUp() {
             showEndScreen();
         }
     }
-    if (SELECTED_PIECE){
+    if (SELECTED_PIECE && SELECTED_PIECE.selected){
         const posicion=SELECTED_PIECE.posicion;
         SELECTED_PIECE.selected=false;
         SELECTED_PIECE = null;
@@ -504,15 +570,6 @@ function getPressedPiece (loc) {
 function getPressedPieceByColor (loc,color) {
     for (let i = PIECES.length - 1; i >= 0; i--) {
         if (PIECES[i].color==color && !PIECES[i].selected){
-                return PIECES[i];
-        }
-    }
-    return null;
-}
-
-function getPressedPieceByColorSocket (color) {
-    for (let i = PIECES.length - 1; i >= 0; i--) {
-        if (PIECES[i].color==color){
                 return PIECES[i];
         }
     }
@@ -621,7 +678,6 @@ function initializePieces (rows, cols) {
 
 
 function randomizePieces (rows, cols) {
-    divmenu=document.getElementById("menuItems");
     for (let i = 0; i < PIECES.length; i++) {
         const rx=Math.random();
         const ry=Math.random();
@@ -827,6 +883,16 @@ class Piece {
         this.correct = true;
         //POP_SOUND.play();
     }
+    reconstruir (x,y) {
+        this.width = SIZE.width/SIZE.columns;
+        this.height = SIZE.height/SIZE.rows;
+        this.x=x;
+        this.y=y;
+        /* this.x = SIZE.x+SIZE.width*this.colIndex/SIZE.columns;
+        this.y = SIZE.y+SIZE.height*this.rowIndex/SIZE.rows;
+        this.xCorrect = this.x;
+        this.yCorrect = this.y; */
+    }
 }
 
 
@@ -887,6 +953,7 @@ function showEndScreen() {
 }
 
 function showMenu() {
+    socket.emit('reiniciar-partida',({uid}));
     document.getElementById("endScreen").style.display="none";
     document.getElementById("menuItems").style.display="block";
 }

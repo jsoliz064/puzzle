@@ -1,5 +1,4 @@
 
-
 CREATE TABLE users (
   id INT(11) auto_increment NOT NULL, 
   PRIMARY KEY (id),
@@ -28,7 +27,6 @@ CREATE TABLE piezas (
   sala_id int(11), 
   FOREIGN KEY(sala_id) REFERENCES salas (id)
 );
-
 
 CREATE TABLE users_salas(
    id INT(11) auto_increment NOT NULL, 

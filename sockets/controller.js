@@ -4,12 +4,20 @@ const sala=require('../controllers/sala');
 
 const socketController = async( socket = new Socket(), io ) => {
 
-    socket.on('obtener-llave', (uid) => {
-        // Conectarlo a una sala especial
-       // if (!sala.verifSala({llave: uid})){
-         //   sala.crearSala({llave:uid});
-        //}
+    socket.on('obtener-llave',(uid,callback) => {
+        
+        /* sala.verificar({llave:uid})
+            .then(sala=>console.log(sala))
+            .catch(err=>{
+                sala.crearSala({llave:uid})
+                    .then(err=>console.log(sala)
+                    .catch(err=>console.log(err))
+        }
+        ); */
+           
+        
         socket.join( uid );
+
     });
 
     socket.on('registrar-usuario',({uid,nombre,aciertos},callback)=>{
@@ -47,9 +55,9 @@ const socketController = async( socket = new Socket(), io ) => {
         }
     });
 
-    socket.on('dimencionar', ({ uid, row,col,wx,wy,piezas}) => {
+    socket.on('dimencionar', ({ uid, row,col,wx,wy,piezas,img}) => {
         if ( uid ) {
-            socket.to( uid ).emit( 'dimencionado', {row,col,wx,wy,piezas});
+            socket.to( uid ).emit( 'dimencionado', {row,col,wx,wy,piezas,img});
         }
     });
 
@@ -119,9 +127,17 @@ const socketController = async( socket = new Socket(), io ) => {
             socket.to( uid ).emit( 'recibiendo-jugadores2', {nombre,aciertos});
         }
     });
-  
 
-
+    socket.on('reiniciar-partida',({uid})=>{
+        if ( uid ) {
+            socket.to( uid ).emit( 'partida-reiniciada');
+        }
+    });
+    socket.on('recargar-pagina',({uid})=>{
+        if ( uid ) {
+            socket.to( uid ).emit('pagina-recargada');
+        }
+    });
 }
 
 module.exports = {

@@ -1,30 +1,21 @@
 
 const pool = require('../database/conexion');
 
-const verifSala=async(req)=>{
-    const { llave } = req;
-    const newSalas = {
-        llave: llave,
-    };
-    const sala=await pool.query('SELECT * from salas where ?', [newSalas]);
-    if (sala!==""){
-        return true;
-    }
-    return false;
+const verificar=(req)=>{
+    return new Promise((resolve,reject)=>{
+        const sala=pool.query('SELECT * FROM salas WHERE llave = ?',[req]);
+        (sala.length>0)?resolve(sala):reject('mrd');
+    });
+}
+
+const crearSala=(req)=>{
+    return new Promise((resolve,reject)=>{
+        const sala = pool.query('INSERT INTO salas set ?', [req]);
+        (sala)?resolve(sala):reject(null);
+    });
 }
 
 
-const crearSala = async(req) => {
-    const { llave, filas,columnas,width,height,imagen } = req;
-    const newSalas = {
-        llave: llave,
-    };
-    const sala=await pool.query('SELECT * from salas where ?', [newSalas]);
-    if (sala==""){
-        const sala = await pool.query('INSERT INTO salas set ?', [newSalas]);
-        return sala;
-    }
-}
 const crearUsuario=async(req)=>{
     const {id,nombre,aciertos}= req;
     const user=await pool.query('SELECT * from users where ?', [id]);
@@ -59,5 +50,5 @@ const crearUserSala = async(req) => {
 }
 
 module.exports ={
-    crearSala,verifSala,crearUsuario
+    verificar,crearSala
 }
