@@ -89,14 +89,10 @@ function main () {
 
     imagenes = ["img8.png","img1.png","img2.jpg","img3.png","img4.png","img5.png","img6.png","img7.png"];
     i=0;
-
     txtfila     = document.getElementById("filas");
     txtcolumna     = document.getElementById("columnas");
-
-
     winWidth= window.innerWidth;
     winHeight= window.innerHeight;
-
     /* SOCKETS */
     
     socket=io();
@@ -104,13 +100,7 @@ function main () {
     
     socket.on('connect', () => {
         socket.emit('obtener-llave',uid,(sala_id)=>{
-            console.log(sala_id);
-           /*  if (ok){
-                console.log('sala creada en la bd');
-            }else{
-                console.log('sala ya creada en la bd');
-            }
-                console.log(sala_id); */
+
         });
 
         if (invitado){
@@ -230,6 +220,10 @@ function main () {
     socket.on('pagina-recargada',()=>{
         location.reload();
     });
+
+    socket.on('resultados',(resultados)=>{
+        console.log(resultados);
+    });
   
 
     CANVAS = document.getElementById("myCanvas");
@@ -263,7 +257,6 @@ function ocultarElementos(){
     const txtcolumna=document.getElementById("columnas")
     const btnsiguiente=document.getElementById("btnsiguiente")
     const btnatras=document.getElementById("btnatras")
-
 
     btncomenzar.style.display="none";
     footer.style.display="none";
@@ -339,6 +332,17 @@ function cargarImagen(imagen){
     }
 }
 
+async function armarpuzzle(){
+    /* for (let i = 0; i < PIECES.length-1; i++) {
+        
+        setTimeout(function(){
+            PIECES[i].x=PIECES[i].xCorrect;
+            PIECES[i].y=PIECES[i].yCorrect;
+        },5000);
+        await delay(1000);
+    } */
+}
+
 function initializePiecesSocket (rows, cols,piezas) {
     SIZE.rows = rows;
     SIZE.columns = cols;
@@ -381,13 +385,7 @@ function restart () {
         nombre=document.getElementById("txtjugador").value;
     }
     aciertos=0;
-
-  /*   socket.emit('registrar-usuario',{uid,nombre,aciertos},({ok,user})=>{
-        if (ok) {
-            usuario_id=user;
-        }
-    }); */
-
+  
     if (SELECTED_PIECE!=null){
         SELECTED_PIECE.selected=false;
         SELECTED_PIECE = null;
@@ -400,7 +398,7 @@ function restart () {
     }
     START_TIME  = new Date().getTime();
     END_TIME = null;
-    agregarJugador();
+    /* agregarJugador(); */
     document.getElementById("menuItems").style.display = "none";
     
 }
@@ -512,8 +510,8 @@ function onMouseDown (evt) {
 }
 
 function actualizarPosicion(index){
-    for (let i = index; i < PIECES.length; i++) {
-        PIECES[i].posicion=PIECES[i].posicion-1;
+    for (let j = index; j < PIECES.length; j++) {
+        PIECES[j].posicion=PIECES[j].posicion-1;
     }
 }
 
@@ -530,7 +528,7 @@ function onMouseMove(evt) {
 
 
 function onMouseUp() {
-    if (SELECTED_PIECE && SELECTED_PIECE.isClose() && SELECTED_PIECE.selected) {
+    if (SELECTED_PIECE && SELECTED_PIECE.isClose() && !SELECTED_PIECE.correct) {
         SELECTED_PIECE.snap ();
         aciertos=aciertos+1;
         if ( isComplete() && END_TIME == null) {
@@ -547,7 +545,7 @@ function onMouseUp() {
             showEndScreen();
         }
     }
-    if (SELECTED_PIECE && SELECTED_PIECE.selected){
+    if (SELECTED_PIECE){
         const posicion=SELECTED_PIECE.posicion;
         SELECTED_PIECE.selected=false;
         SELECTED_PIECE = null;
@@ -948,6 +946,7 @@ function showEndScreen() {
     document.getElementById("tbusuario").innerText=nombre;
     document.getElementById("tbaciertos").innerText=aciertos;
 
+   
     /* document.getElementById('saveBtn').innerHTML="Save"; */
     /* document.getElementById('saveBtn').disable=false; */
 }

@@ -20,19 +20,6 @@ const socketController = async( socket = new Socket(), io ) => {
 
     });
 
-    socket.on('registrar-usuario',({uid,nombre,aciertos},callback)=>{
-       /*  const user=sala.crearUsuario({uid,nombre,aciertos});
-        if (user){
-            callback({
-                ok:true,
-                user_id:user
-            });
-            console.log(user);
-        }else{
-           callback({ok:false}); 
-        } */
-    });
-    
     /* puzzle primera version */
     socket.on('enviar-mensaje', ({ uid,px,py }) => {
         if ( uid ) {

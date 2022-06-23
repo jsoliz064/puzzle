@@ -58,12 +58,12 @@ body {
 .menu {
     position: absolute;
     margin: auto;
-    top: 0;
+    top: 19%;
     right: 0;
     bottom: 0;
     left: 0;
-    width: 300px;
-    height: 300px;
+    width: 500px;
+    height: 500px;
     background: rgba(255, 255, 255, 0.6);
     border: 1vmin rgb(0, 0, 0) solid;
 }
@@ -174,7 +174,7 @@ body {
     border: none;
     border-radius: 4vmin;
 } */
-@media screen and (min-width: 350px) {
+/* @media screen and (min-width: 350px) {
     .menu {
         height: 250px;
         width: 250px;
@@ -200,7 +200,7 @@ body {
         height: 500px;
         width: 500px;
     }
-}
+} */
 
 
 button:hover {

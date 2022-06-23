@@ -7,7 +7,7 @@ module.exports = {
         port:3306,
         user: 'root',
         database: 'puzzle',
-        password: '',
+        password: 'r2beat015340',
     }
 
 };
