@@ -1,4 +1,3 @@
-let VIDEO = null;
 let IMG = null;
 let CANVAS = null;
 let CONTEXT = null;
@@ -7,6 +6,7 @@ let HELPER_CONTEXT = null;
 let SCALER = 0.6;
 let SIZE = { x: 0, y: 0, width: 0, height: 0, rows: 3, columns: 3 };
 let PIECES = [];
+let USUARIOS=[];
 let SELECTED_PIECE = null;
 let START_TIME = null;
 let END_TIME = null;
@@ -27,7 +27,10 @@ let winHeight = null;
 let i = null;
 let imagenes = null;
 let jugadores = [];
-
+let nombre= null;
+let aciertos=null;
+let usuario_id = null;
+let sala= null;
 //initializePieces(row.getvalue, col.getvalue);
 
 let keys = {
@@ -37,6 +40,7 @@ let keys = {
 }
 
 
+<<<<<<< HEAD
 function main() {
     const searchParams = new URLSearchParams(window.location.search);
     /* obtener sala del socket*/
@@ -47,6 +51,45 @@ function main() {
     uid = searchParams.get('sala');
     invitado = searchParams.get('invitado');
     if (invitado) {
+=======
+function main () {
+    /* window.onresize=function () {
+        winWidth= window.innerWidth;
+        winHeight= window.innerHeight;
+        dimensionarMenu();
+        divmenu=document.getElementById("menuItems");
+        
+        CANVAS.width = winWidth;
+        CANVAS.height = winHeight;
+        
+        HELPER_CANVAS.width = winWidth;
+        HELPER_CANVAS.height = winHeight;
+
+        let resizer = SCALER*
+        Math.min(
+            winWidth / IMG.width, 
+            winHeight / IMG.height
+        );
+        SIZE.width = resizer*IMG.width;
+        SIZE.height = resizer*IMG.height;
+        SIZE.x = winWidth/2-SIZE.width/2;
+        SIZE.y = winHeight/2-SIZE.height/2;
+        console.log(SIZE);
+        for (let i = 0; i < PIECES.length; i++){
+            PIECES[i].reconstruir(PIECES[i].x,PIECES[i].y);
+        }
+    } */
+    /* document.getElementById("menuItems").style.display = "none";
+    showEndScreen(); */
+    const searchParams=new URLSearchParams(window.location.search);
+    /* obtener sala del socket*/
+    
+    uid = searchParams.get('sala');
+    invitado=searchParams.get('invitado');
+    
+
+    if (invitado){
+>>>>>>> master
         ocultarElementos();
     }
     const txtfacebook = document.getElementById('facebook');
@@ -54,6 +97,7 @@ function main() {
     const txtenlace = document.getElementById('enlace');
     const enlace = "http://144.22.174.111:6060/PuzzleCam.html?sala=" + searchParams.get('sala') + "&img=" + searchParams.get('img') + "&invitado=true";
     txtenlace.innerText = enlace;
+<<<<<<< HEAD
     txtfacebook.setAttribute('href', "https://www.facebook.com/sharer/sharer.php?u=https://" + enlace);
     txtwhatsaap.setAttribute('href', "https://api.whatsapp.com/send?text=" + enlace);
     imagenes = ["img2.jpg", "img3.png", "pikachu.png"];
@@ -64,16 +108,36 @@ function main() {
     winWidth = window.innerWidth;
     winHeight = window.innerHeight;
 
+=======
+    txtfacebook.setAttribute('href',"https://www.facebook.com/sharer/sharer.php?u=https://"+enlace);
+    txtwhatsaap.setAttribute('href',"https://api.whatsapp.com/send?text="+enlace);
+
+    imagenes = ["img8.png","img1.png","img2.jpg","img3.png","img4.png","img5.png","img6.png","img7.png"];
+    i=0;
+    txtfila     = document.getElementById("filas");
+    txtcolumna     = document.getElementById("columnas");
+    winWidth= window.innerWidth;
+    winHeight= window.innerHeight;
+>>>>>>> master
     /* SOCKETS */
 
     socket = io();
 
 
     socket.on('connect', () => {
+<<<<<<< HEAD
         socket.emit('obtener-llave', uid);
         if (invitado) {
             //console.log("soy invitado");
             socket.emit('nuevo-usuario', uid);
+=======
+        socket.emit('obtener-llave',uid,(sala_id)=>{
+
+        });
+
+        if (invitado){
+            socket.emit('nuevo-usuario',uid);
+>>>>>>> master
         }
     });
 
@@ -88,6 +152,7 @@ function main() {
         restart();
     });
 
+<<<<<<< HEAD
     if (!invitado) {
         socket.on('usuario-conectado', () => {
             const row = txtfila.value;
@@ -112,11 +177,47 @@ function main() {
 
         handleResize();
         initializePiecesSocket(row, col, piezas);
+=======
+    if (!invitado){
+        socket.on('usuario-conectado',()=>{
+            const row=txtfila.value;
+            const col=txtcolumna.value;
+            const wx=winWidth;
+            const wy=winHeight;
+            let piezas=[];
+            piezas=piezas.concat(PIECES);
+            const img=i;
+            socket.emit('dimencionar',({uid,row,col,wx,wy,piezas,img}));
+        });
+    }
+   
+
+    socket.on('dimencionado',({row,col,wx,wy,piezas,img})=>{
+        if (img==null){
+            img=0;
+        }
+        i=img;
+        txtfila.value=row;
+        txtcolumna.value=col;
+        if (wx!=null && wy!=null){
+            winWidth=wx;
+            winHeight=wy;
+        }
+        const imagen=imagenes[i];
+        IMG=new Image ();
+        IMG.src='./img/'+imagen;
+        IMG.onload=function () {
+            handleResize ();
+            initializePiecesSocket(row, col,piezas);
+        }
+        
+>>>>>>> master
     });
 
     socket.on('get-piezas', ({ piezas }) => {
         initializePiecesSocket(txtfila.value, txtcolumna.value, piezas);
     });
+<<<<<<< HEAD
 
     socket.on('pieza-seleccionada', ({ posicion }) => {
         //SELECTED_PIECE=getPressedPieceByColorSocket(clickedColor);
@@ -129,9 +230,22 @@ function main() {
         if (PIECES[posicion] && PIECES[posicion].isClose()) {
             PIECES[posicion].snap();
             if (isComplete() && END_TIME == null) {
+=======
+    
+    socket.on('pieza-seleccionada',({posicion})=>{
+        PIECES[posicion].selected=true;
+    });
+
+    socket.on('pieza-soltada',({posicion})=>{
+        if (PIECES[posicion] && PIECES[posicion].isClose()) {
+            PIECES[posicion].snap();
+            
+            if ( isComplete() && END_TIME == null) {
+>>>>>>> master
                 let now = new Date().getTime();
                 END_TIME = now;
                 setTimeout(playMelody, 500);
+                PIECES[posicion].selected=false;
                 showEndScreen();
             }
         }
@@ -143,10 +257,18 @@ function main() {
         PIECES[posicion].y = my;
     });
 
+<<<<<<< HEAD
     socket.on('posicion-cambiada', ({ index }) => {
         let pieza = PIECES[index];
         PIECES[index].posicion = 8;
         PIECES.splice(index, 1);
+=======
+    socket.on('posicion-cambiada',({index})=>{
+        
+        PIECES[index].posicion=PIECES.length - 1;
+        let pieza=PIECES[index];
+        PIECES.splice (index, 1);
+>>>>>>> master
         actualizarPosicion(index);
         PIECES.push(pieza);
     });
@@ -159,12 +281,39 @@ function main() {
         imprimir(jugador);
     })
 
+    socket.on('partida-terminada',()=>{
+        showEndScreen();
+    });
+
+    socket.on('recibiendo-jugadores',(user,acierto)=>{
+        socket.emit('pasar-usuario2',({uid,nombre,aciertos}));
+    });
+    socket.on('recibiendo-jugadores2',(user,acierto)=>{
+        console.log(user,acierto);
+    });
+
+    socket.on('partida-reiniciada',()=>{
+        document.getElementById("endScreen").style.display="none";
+        document.getElementById("menuItems").style.display="block";
+        document.getElementById("txtjugador").value=nombre;
+
+    });
+
+    socket.on('pagina-recargada',()=>{
+        location.reload();
+    });
+
+    socket.on('resultados',(resultados)=>{
+        console.log(resultados);
+    });
+  
 
     CANVAS = document.getElementById("myCanvas");
     CONTEXT = CANVAS.getContext("2d");
 
     HELPER_CANVAS = document.getElementById("helperCanvas");
     HELPER_CONTEXT = HELPER_CANVAS.getContext("2d");
+<<<<<<< HEAD
     const imagen = searchParams.get('img');
     addEventListeners();
     IMG = new Image();
@@ -200,6 +349,70 @@ function imprimir(jugador) {
     var divjugador = document.getElementById('jugadores');
     divjugador.innerHTML = html;
     divjugador.scrollTop = divjugador.scrollHeight;
+=======
+    const imagen=imagenes[i];
+    addEventListeners ();
+        IMG=new Image ();
+        IMG.src='./img/'+imagen;
+        IMG.onload=function () {
+            handleResize ();
+            initializePieces (SIZE.rows, SIZE.columns);
+            updateGame ();
+            //dimensionarMenu();
+        }
+    HELPER_CONTEXT.canvas.hidden =true;
+    
+}
+
+function recargar(){
+    socket.emit('recargar-pagina',({uid}));
+    location.reload();
+}
+
+function ocultarElementos(){
+    const btncomenzar=document.getElementById("btnstart");
+    const footer=document.getElementById("footer");
+    const txtfilas=document.getElementById("filas")
+    const txtcolumna=document.getElementById("columnas")
+    const btnsiguiente=document.getElementById("btnsiguiente")
+    const btnatras=document.getElementById("btnatras")
+
+    btncomenzar.style.display="none";
+    footer.style.display="none";
+    txtfilas.setAttribute('readonly', 'true');
+    txtcolumna.setAttribute('readonly', 'true');
+    btnsiguiente.style.display="none";
+    btnatras.style.display="none";
+    document.getElementById("btnRecargar").style.display="none";
+}
+function imprimir(jugador){
+    var html=`<p>${jugador}</p>`
+    var divjugador=document.getElementById('jugadores');
+    divjugador.innerHTML=html;
+    divjugador.scrollTop=divjugador.scrollHeight;
+}
+
+function imprimir2(jugador,puntaje){
+    var html=`<p>${jugador}</p>`
+    var html2=`<tr>
+    <th scope="row">1</th>
+    <td id="tbusuario">${jugador}</td>
+    <td id="tbaciertos">${puntaje}</td>
+  </tr>`
+    var divjugador=document.getElementById('tbjugadores');
+    divjugador.innerHTML=html;
+}
+
+function dimensionarMenu(){
+    let resizer = SCALER*
+    Math.min(
+        winWidth / IMG.width, 
+        winHeight / IMG.height
+    );
+    divmenu=document.getElementById("menuItems");
+    divmenu.style.width =`${resizer*IMG.width}px`;
+    divmenu.style.height=`${resizer*IMG.height}px`;
+>>>>>>> master
 }
 
 function dimensionarMenu() {
@@ -252,7 +465,22 @@ function cargarImagen(imagen) {
     }
 }
 
+<<<<<<< HEAD
 function initializePiecesSocket(rows, cols, piezas) {
+=======
+async function armarpuzzle(){
+    /* for (let i = 0; i < PIECES.length-1; i++) {
+        
+        setTimeout(function(){
+            PIECES[i].x=PIECES[i].xCorrect;
+            PIECES[i].y=PIECES[i].yCorrect;
+        },5000);
+        await delay(1000);
+    } */
+}
+
+function initializePiecesSocket (rows, cols,piezas) {
+>>>>>>> master
     SIZE.rows = rows;
     SIZE.columns = cols;
     PIECES = [];
@@ -289,9 +517,23 @@ function setDifficulty() {
 }
 
 
+<<<<<<< HEAD
 function restart() {
 
     if (!invitado) {
+=======
+function restart () {
+    if (nombre==null){
+        nombre=document.getElementById("txtjugador").value;
+    }
+    aciertos=0;
+  
+    if (SELECTED_PIECE!=null){
+        SELECTED_PIECE.selected=false;
+        SELECTED_PIECE = null;
+    }
+    if (!invitado){
+>>>>>>> master
         randomizePieces();
         let piezas = [];
         piezas = piezas.concat(PIECES);
@@ -299,8 +541,9 @@ function restart() {
     }
     START_TIME = new Date().getTime();
     END_TIME = null;
-    agregarJugador();
+    /* agregarJugador(); */
     document.getElementById("menuItems").style.display = "none";
+    
 }
 
 function agregarJugador() {
@@ -396,6 +639,7 @@ function onMouseDown(evt) {
     if (SELECTED_PIECE != null && !SELECTED_PIECE.correct) {
         SELECTED_PIECE.selected = true;
         const index = PIECES.indexOf(SELECTED_PIECE);
+<<<<<<< HEAD
         if (index > -1) {
             SELECTED_PIECE.posicion = 8;
             PIECES.splice(index, 1);
@@ -404,6 +648,16 @@ function onMouseDown(evt) {
             socket.emit('cambiar-posicion', { uid, index })
             const posicion = SELECTED_PIECE.posicion;
             socket.emit('seleccionar-pieza', { uid, posicion });
+=======
+        if (index>-1 ) {
+                SELECTED_PIECE.posicion=PIECES.length-1;
+                PIECES.splice (index, 1);
+                actualizarPosicion(index);
+                PIECES.push (SELECTED_PIECE);
+                socket.emit('cambiar-posicion',{uid,index});
+                const posicion=SELECTED_PIECE.posicion;
+                socket.emit('seleccionar-pieza', { uid,posicion });
+>>>>>>> master
         }
         SELECTED_PIECE.offset = {
             x: evt.x - SELECTED_PIECE.x,
@@ -413,9 +667,15 @@ function onMouseDown(evt) {
     }
 }
 
+<<<<<<< HEAD
 function actualizarPosicion(index) {
     for (let i = index; i < PIECES.length; i++) {
         PIECES[i].posicion = PIECES[i].posicion - 1;
+=======
+function actualizarPosicion(index){
+    for (let j = index; j < PIECES.length; j++) {
+        PIECES[j].posicion=PIECES[j].posicion-1;
+>>>>>>> master
     }
 }
 
@@ -432,19 +692,42 @@ function onMouseMove(evt) {
 
 
 function onMouseUp() {
+<<<<<<< HEAD
     if (SELECTED_PIECE && SELECTED_PIECE.isClose()) {
         SELECTED_PIECE.snap();
         if (isComplete() && END_TIME == null) {
+=======
+    if (SELECTED_PIECE && SELECTED_PIECE.isClose() && !SELECTED_PIECE.correct) {
+        SELECTED_PIECE.snap ();
+        aciertos=aciertos+1;
+        if ( isComplete() && END_TIME == null) {
+>>>>>>> master
             let now = new Date().getTime();
             END_TIME = now;
             setTimeout(playMelody, 500);
+            //terminar partida
+            const posicion=SELECTED_PIECE.posicion;
+            SELECTED_PIECE.selected=false;
+            SELECTED_PIECE = null;
+            socket.emit('soltar-pieza',{uid,posicion});
+            USUARIOS.push({'usuario':nombre,'aciertos':aciertos});
+            socket.emit('terminar-partida',{uid});
             showEndScreen();
         }
     }
+<<<<<<< HEAD
     const posicion = SELECTED_PIECE.posicion;
     socket.emit('soltar-pieza', { uid, posicion });
     SELECTED_PIECE.selected = false;
     SELECTED_PIECE = null;
+=======
+    if (SELECTED_PIECE){
+        const posicion=SELECTED_PIECE.posicion;
+        SELECTED_PIECE.selected=false;
+        SELECTED_PIECE = null;
+        socket.emit('soltar-pieza',{uid,posicion});
+    }
+>>>>>>> master
 }
 
 
@@ -468,6 +751,7 @@ function getPressedPieceByColor(loc, color) {
     return null;
 }
 
+<<<<<<< HEAD
 function getPressedPieceByColorSocket(color) {
     for (let i = PIECES.length - 1; i >= 0; i--) {
         if (PIECES[i].color == color) {
@@ -479,6 +763,10 @@ function getPressedPieceByColorSocket(color) {
 
 function handleResize() {
 
+=======
+function handleResize () {
+    
+>>>>>>> master
     CANVAS.width = winWidth;
     CANVAS.height = winHeight;
 
@@ -578,8 +866,12 @@ function initializePieces(rows, cols) {
 }
 
 
+<<<<<<< HEAD
 function randomizePieces(rows, cols) {
     divmenu = document.getElementById("menuItems");
+=======
+function randomizePieces (rows, cols) {
+>>>>>>> master
     for (let i = 0; i < PIECES.length; i++) {
         const rx = Math.random();
         const ry = Math.random();
@@ -592,7 +884,12 @@ function randomizePieces(rows, cols) {
         PIECES[i].correct = false;
     }
 }
-
+class Usuario{
+    constructor (nombre){
+        this.nombre=nombre;
+        this.puntaje=0;
+    }
+}
 
 class Piece {
     constructor(rowIndex, colIndex, color, indice) {
@@ -773,7 +1070,17 @@ class Piece {
         this.x = this.xCorrect;
         this.y = this.yCorrect;
         this.correct = true;
-        POP_SOUND.play();
+        //POP_SOUND.play();
+    }
+    reconstruir (x,y) {
+        this.width = SIZE.width/SIZE.columns;
+        this.height = SIZE.height/SIZE.rows;
+        this.x=x;
+        this.y=y;
+        /* this.x = SIZE.x+SIZE.width*this.colIndex/SIZE.columns;
+        this.y = SIZE.y+SIZE.height*this.rowIndex/SIZE.rows;
+        this.xCorrect = this.x;
+        this.yCorrect = this.y; */
     }
 }
 
@@ -824,6 +1131,7 @@ function playMelody() {
 
 
 function showEndScreen() {
+<<<<<<< HEAD
     const time = Math.floor((END_TIME - START_TIME) / 1000);
     document.getElementById("scoreValue").innerHTML = "Score: " + time;
     document.getElementById("endScreen").style.display = "block";
@@ -834,6 +1142,23 @@ function showEndScreen() {
 function showMenu() {
     document.getElementById("endScreen").style.display = "none";
     document.getElementById("menuItems").style.display = "block";
+=======
+    const time = Math.floor((END_TIME-START_TIME)/1000);
+    document.getElementById("scoreValue").innerHTML="Score: "+time;
+    document.getElementById("endScreen").style.display="block";
+    document.getElementById("tbusuario").innerText=nombre;
+    document.getElementById("tbaciertos").innerText=aciertos;
+
+   
+    /* document.getElementById('saveBtn').innerHTML="Save"; */
+    /* document.getElementById('saveBtn').disable=false; */
+}
+
+function showMenu() {
+    socket.emit('reiniciar-partida',({uid}));
+    document.getElementById("endScreen").style.display="none";
+    document.getElementById("menuItems").style.display="block";
+>>>>>>> master
 }
 
 function showScores() {

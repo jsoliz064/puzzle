@@ -1,0 +1,271 @@
+html:focus-within {
+    overscroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    overscroll-behavior: auto;
+    animation: changecolor 30s infinite;
+}
+
+
+@keyframes changecolor {
+    0% {
+        background-color: rgb(22, 21, 22);
+    }
+
+    15% {
+        background-color: rgb(25, 6, 77);
+    }
+
+    30% {
+        background-color: rgb(75, 15, 117);
+    }
+
+    45% {
+        background-color: rgb(122, 25, 146);
+    }
+
+    60% {
+        background-color: rgb(75, 15, 117);
+    }
+
+    80% {
+        background-color: rgb(52, 12, 97);
+    }
+
+    100% {
+        background-color: rgb(22, 21, 22);
+    }
+}
+
+.centrar-horizontal {
+    width: 100%;
+    text-align: center;
+}
+
+.centrar-vertical {
+    height: 100%;
+    vertical-align: middle;
+}
+
+.titulo {
+    padding: 3vmin;
+    font: normal normal bold 50px/normal "Comic Sans MS", cursive, sans-serif;
+}
+
+.menu {
+    position: absolute;
+    margin: auto;
+    top: 19%;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 500px;
+    height: 500px;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1vmin rgb(0, 0, 0) solid;
+}
+
+.contenido {
+    height: 100%;
+}
+
+.contenido2 {
+    bottom: 39%;
+    position: absolute;
+    padding-left: 5vmin;
+    padding-right: 5vmin;
+}
+
+.footer {
+    text-align: center;
+    width: 100%;
+    bottom: 0px;
+    position: absolute;
+}
+
+.tabla {
+    height: 200px;
+    overflow-y: scroll;
+    background: rgba(255, 255, 255, 0.89);
+    border: rgb(0, 0, 0) solid;
+    border-radius: 2vmin;
+}
+
+.tabla::-webkit-scrollbar {
+    -webkit-appearance: none;
+}
+
+.tabla::-webkit-scrollbar:vertical {
+    width: 10px;
+}
+
+.tabla::-webkit-scrollbar-button:increment,
+.tabla::-webkit-scrollbar-button {
+    display: none;
+}
+
+/* .tabla::-webkit-scrollbar:horizontal {
+    height: 10px;
+} */
+
+.tabla::-webkit-scrollbar-thumb {
+    background-color: #afafaf;
+    border-radius: 20px;
+    border: 2px solid #f1f2f3;
+}
+
+.tabla::-webkit-scrollbar-track {
+    border-radius: 10px;
+}
+
+.nickname {
+    font: normal normal bold 18px/normal "Comic Sans MS", cursive, sans-serif;
+    text-align: center;
+    border-radius: 2vmin;
+}
+
+.enlace {
+    font-size: 1vmin;
+}
+
+.dimension {
+    width: 50%;
+    height: 90%;
+    font-size: 4vmin;
+    border-radius: 1vmin;
+    text-align: center;
+}
+
+.btn-start {
+    font-size: 3vmin;
+    background: rgb(37, 96, 224);
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+    border: none;
+    border-radius: 2vmin;
+}
+
+.cambiar-derecha {
+    background: rgb(0, 255, 76);
+    color: rgb(253, 253, 253);
+    margin-right: -80px;
+    height: 100%;
+    position: absolute;
+}
+
+.cambiar-izquierda {
+    background: rgb(0, 255, 76);
+    color: rgb(253, 253, 253);
+    margin-left: -80px;
+    height: 100%;
+    position: absolute;
+}
+
+/* button {
+    font-size: 7vmin;
+    background: rgb(37, 96, 224);
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+    border: none;
+    border-radius: 4vmin;
+} */
+/* @media screen and (min-width: 350px) {
+    .menu {
+        height: 250px;
+        width: 250px;
+    }
+}
+
+@media screen and (min-width: 450px) {
+    .menu {
+        height: 400px;
+        width: 400px;
+    }
+}
+
+@media screen and (min-width: 600px) {
+    .menu {
+        height: 400px;
+        width: 400px;
+    }
+}
+
+@media screen and (min-width: 800px) {
+    .menu {
+        height: 500px;
+        width: 500px;
+    }
+} */
+
+
+button:hover {
+    background: rgb(255, 0, 0);
+    color: rgb(253, 253, 253);
+}
+
+button:disabled {
+    background: lightgray;
+    color: gray;
+    cursor: default;
+}
+
+select {
+    font-size: 7vmin;
+    cursor: pointer;
+    border: none;
+    border-radius: 1vmin;
+    outline: none;
+}
+
+#time {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%);
+}
+
+#jugadores {
+    position: absolute;
+    top: 50%;
+    right: 10%;
+}
+
+#scoresContainer {
+    height: 43vh;
+    overflow: auto;
+}
+
+/* #myCanvas {
+    position: absolute;
+    margin:auto;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+ */
+/* @media screen and (min-width: 350px){
+    #myCanvas{
+        height: 300px;
+        width: 300px;
+    }
+  }
+
+@media screen and (min-width: 450px){
+    #myCanvas{
+        height: 400px;
+        width: 400px;
+    }
+  }
+
+  @media screen and (min-width: 650px){
+    #myCanvas{
+        height: 500px;
+        width: 500px;
+    }
+  } */

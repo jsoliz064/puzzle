@@ -8,6 +8,7 @@ module.exports = {
         user: 'root',
         password: '1234',
         database: 'sw1'
+
     }
 
 };
