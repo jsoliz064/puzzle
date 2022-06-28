@@ -26,11 +26,13 @@ let winHeight= null;
 
 let i= null;
 let imagenes=null;
-let jugadores = [];
-let nombre= null;
-let aciertos=null;
-let usuario_id = null;
 let sala= null;
+let usuario_id = null;
+let nombre= null;
+let sala_usuario=null;
+let aciertos=null;
+let jugadores=null;
+
 //initializePieces(row.getvalue, col.getvalue);
 
 let keys = {
@@ -99,8 +101,10 @@ function main () {
     
     
     socket.on('connect', () => {
-        socket.emit('obtener-llave',uid,(sala_id)=>{
-
+      
+        socket.emit('obtener-llave',uid,(callback)=>{
+            sala=callback.sala_id;
+            console.log(sala);
         });
 
         if (invitado){
@@ -203,13 +207,6 @@ function main () {
         showEndScreen();
     });
 
-    socket.on('recibiendo-jugadores',(user,acierto)=>{
-        socket.emit('pasar-usuario2',({uid,nombre,aciertos}));
-    });
-    socket.on('recibiendo-jugadores2',(user,acierto)=>{
-        console.log(user,acierto);
-    });
-
     socket.on('partida-reiniciada',()=>{
         document.getElementById("endScreen").style.display="none";
         document.getElementById("menuItems").style.display="block";
@@ -221,8 +218,10 @@ function main () {
         location.reload();
     });
 
-    socket.on('resultados',(resultados)=>{
+    socket.on('resultado-final',(resultados)=>{
         console.log(resultados);
+        jugadores=resultados;
+        imprimir2();
     });
   
 
@@ -273,13 +272,16 @@ function imprimir(jugador){
     divjugador.scrollTop=divjugador.scrollHeight;
 }
 
-function imprimir2(jugador,puntaje){
-    var html=`<p>${jugador}</p>`
-    var html2=`<tr>
-    <th scope="row">1</th>
-    <td id="tbusuario">${jugador}</td>
-    <td id="tbaciertos">${puntaje}</td>
-  </tr>`
+function imprimir2(){
+    var html="";
+    for (let i = 0; i < jugadores.length; i++) {
+        var html2=`<tr>
+        <th scope="row">${i+1}</th>
+        <td id="tbusuario">${jugadores[i].nombre}</td>
+        <td id="tbaciertos">${jugadores[i].puntos}</td>
+        </tr>`
+        html=html+html2;
+    }
     var divjugador=document.getElementById('tbjugadores');
     divjugador.innerHTML=html;
 }
@@ -322,24 +324,34 @@ function siguiente() {
     
 }
 function cargarImagen(imagen){
-    if (!invitado){
-        socket.emit('cambiar-imagen',{uid,imagen});
-    }
     IMG.src='./img/'+imagen;
     IMG.onload=function () {
         handleResize ();
         updateGame ();
     }
+    if (!invitado){
+        socket.emit('cambiar-imagen',{uid,imagen});
+        /* const row=txtfila.value;
+            const col=txtcolumna.value;
+            let piezas=[];
+            piezas=piezas.concat(PIECES);
+            const img=i;
+            socket.emit('dimencionar',({uid,row,col,piezas,img})); */
+    }
+    
 }
 
-async function armarpuzzle(){
-    /* for (let i = 0; i < PIECES.length-1; i++) {
-        
-        setTimeout(function(){
-            PIECES[i].x=PIECES[i].xCorrect;
-            PIECES[i].y=PIECES[i].yCorrect;
-        },5000);
-        await delay(1000);
+function armarpuzzle(){
+    /* console.log("ga")
+    for (let i = 0; i < PIECES.length; i++) {
+            let j=1;
+            while (j<=50){
+                setInterval(() => {
+                    PIECES[i].x+=1;
+                    j=j+1;
+                    console.log("ga")
+                },500);
+            }
     } */
 }
 
@@ -376,16 +388,32 @@ function setDifficulty () {
     initializePieces(row,col);
     let piezas=[];
     piezas=piezas.concat(PIECES);
-    socket.emit('dimencionar',({uid,row,col,piezas}));
+    const img=i;
+    socket.emit('dimencionar',({uid,row,col,piezas,img}));
 }
-
+function guardarUsuarios(){
+      /* guardar usuario en la bd con su sala*/
+      const usuario={usuario_id,nombre,aciertos,sala};
+      if (usuario.usuario_id==null){
+          socket.emit('crear-usuario',usuario,(callback)=>{
+            console.log(callback)
+            const {user_id,sala_id,sala_usuario_id}=callback;
+            usuario_id=user_id;
+            sala_usuario=sala_usuario_id;
+          });
+      }else{
+        const usuario={usuario_id,sala,aciertos,sala_usuario};
+        socket.emit('sumar-puntos',usuario,SELECTED_PIECE);
+      }
+      /*  */
+}
 
 function restart () {
     if (nombre==null){
         nombre=document.getElementById("txtjugador").value;
     }
     aciertos=0;
-  
+    guardarUsuarios();
     if (SELECTED_PIECE!=null){
         SELECTED_PIECE.selected=false;
         SELECTED_PIECE = null;
@@ -400,7 +428,6 @@ function restart () {
     END_TIME = null;
     /* agregarJugador(); */
     document.getElementById("menuItems").style.display = "none";
-    
 }
 
 function agregarJugador(){
@@ -525,12 +552,18 @@ function onMouseMove(evt) {
         socket.emit('mover-pieza',({uid,posicion,mx,my}));
     }
 }
+function suamarpuntos(){
+    /* GUARDAR ACIERTOS Y PIEZA DEL TABLERO */
+    aciertos=aciertos+1;
+    const usuario={usuario_id,sala,aciertos,sala_usuario};
+    socket.emit('sumar-puntos',usuario,SELECTED_PIECE);
 
+}
 
 function onMouseUp() {
     if (SELECTED_PIECE && SELECTED_PIECE.isClose() && !SELECTED_PIECE.correct) {
         SELECTED_PIECE.snap ();
-        aciertos=aciertos+1;
+        suamarpuntos(); //sumar aciertos en la bd y guar la pieza
         if ( isComplete() && END_TIME == null) {
             let now = new Date().getTime();
             END_TIME = now;
@@ -540,8 +573,12 @@ function onMouseUp() {
             SELECTED_PIECE.selected=false;
             SELECTED_PIECE = null;
             socket.emit('soltar-pieza',{uid,posicion});
-            USUARIOS.push({'usuario':nombre,'aciertos':aciertos});
             socket.emit('terminar-partida',{uid});
+            socket.emit('partida-terminada',uid,sala_usuario,sala,(callback)=>{
+                jugadores=callback;
+                imprimir2();
+                console.log(jugadores)
+            });
             showEndScreen();
         }
     }
@@ -947,11 +984,13 @@ function showEndScreen() {
     document.getElementById("tbaciertos").innerText=aciertos;
 
    
+  
     /* document.getElementById('saveBtn').innerHTML="Save"; */
     /* document.getElementById('saveBtn').disable=false; */
 }
 
 function showMenu() {
+    
     socket.emit('reiniciar-partida',({uid}));
     document.getElementById("endScreen").style.display="none";
     document.getElementById("menuItems").style.display="block";

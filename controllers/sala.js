@@ -1,54 +1,95 @@
 
 const pool = require('../database/conexion');
 
-const verificar=(req)=>{
+const crearsala=(req)=>{
+    console.log('creando sala')
+
     return new Promise((resolve,reject)=>{
-        const sala=pool.query('SELECT * FROM salas WHERE llave = ?',[req]);
-        (sala.length>0)?resolve(sala):reject('mrd');
+        pool.query('SELECT * FROM `salas` WHERE ?',[req], function (err, result) {
+            if (err){
+                reject(err);
+            }
+            if (result.length==0){
+                pool.query('INSERT INTO `salas` set ?', [req], function(err,result){
+                    if (err){
+                        reject(err);
+                    }else{
+                        const sala=result.insertId;
+                        console.log(sala,"nueva sala creada");
+                        resolve({ok:true,sala_id: sala});
+                    }
+                });
+            }else{
+                console.log("ya existe la sala");
+                resolve({ok: false,sala_id: result[0].id});
+            }
+        });
     });
 }
 
-const crearSala=(req)=>{
+const crearUsuario=(usuario)=>{
+    console.log('creando usuario',usuario)
     return new Promise((resolve,reject)=>{
-        const sala = pool.query('INSERT INTO salas set ?', [req]);
-        (sala)?resolve(sala):reject(null);
+        pool.query('INSERT INTO `users` set nombre=?', [usuario.nombre], function(err,result){
+            if (err){
+                reject(err);
+            }else{
+                let user=result.insertId;
+                const usersala={
+                    user_id: user,
+                    sala_id: usuario.sala,
+                    puntos: 0
+                }
+                pool.query('INSERT INTO `users_salas` set ?', [usersala], function(err,result){
+                    if (err){
+                        reject(err);
+                    }else{
+                        const usersala=result.insertId;
+                        const users={
+                            user_id: user,
+                            sala_id: usuario.sala,
+                            sala_usuario_id:usersala
+                        }
+                        console.log('usuario creado',usuario.nombre,users)
+                        resolve(users);
+                    }
+                });
+            }
+        });
+    });
+}
+
+const sumarpuntos=(usuario,pieza)=>{
+    console.log('sumando puntaje',usuario)
+    return new Promise((resolve,reject)=>{
+        pool.query('UPDATE `users_salas` SET puntos=? WHERE id=?',[usuario.aciertos,usuario.sala_usuario], function (err, result) {
+            if (err){
+                reject(err);
+            }else{
+                console.log('puntaje sumado')
+                resolve(result);
+            }
+        });
+    });
+}
+
+const resultadofinal=(sala)=>{
+    console.log('obteniendo resultados de sala', sala);
+
+    return new Promise((resolve, reject) => {
+        pool.query('SELECT users.nombre, users_salas.puntos FROM users JOIN users_salas ON users_salas.user_id=users.id WHERE users_salas.sala_id=?', [sala], function (err, result) {
+            if (err) {
+                reject(err);
+            }
+            else {
+                resolve(result);
+            }
+        });
     });
 }
 
 
-const crearUsuario=async(req)=>{
-    const {id,nombre,aciertos}= req;
-    const user=await pool.query('SELECT * from users where ?', [id]);
-    if (user==""){
-        const user= {
-            nombre,aciertos
-        }
-        return await pool.query('INSERT INTO users set ?', [user]);
-    }
-    return null;
-}
-
-const crearUserSala = async(req) => {
-    const {uid,nombre,aciertos } = req;
-    const newSalas = {
-        nombre,
-        aciertos
-    };
-    const sala=await pool.query('SELECT * from salas where ?', [uid]);
-    if (sala!==""){
-        const user = await pool.query('INSERT INTO users set ?', [newSalas]);
-        const usersala={
-            user_id:user.id, 
-            sala_id:sala.id, 
-            puntos: aciertos
-        }
-        const user_sala = await pool.query('INSERT INTO users_salas set ?', [usersala]);
-        return sala;
-    }else{
-
-    }
-}
 
 module.exports ={
-    verificar,crearSala
+    crearsala,sumarpuntos,crearUsuario,resultadofinal,
 }

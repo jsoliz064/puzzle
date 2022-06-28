@@ -2,22 +2,46 @@
 
 const sala=require('../controllers/sala');
 
+let usuarios=[];
+
 const socketController = async( socket = new Socket(), io ) => {
 
-    socket.on('obtener-llave',(uid,callback) => {
-        
-        /* sala.verificar({llave:uid})
-            .then(sala=>console.log(sala))
-            .catch(err=>{
-                sala.crearSala({llave:uid})
-                    .then(err=>console.log(sala)
-                    .catch(err=>console.log(err))
-        }
-        ); */
-           
-        
-        socket.join( uid );
+    /* SOCKETS COMO APIS */
+    socket.on('crear-usuario',(usuario,callback)=>{
+        sala.crearUsuario(usuario)
+            .then(result=>callback(result))
+        .catch(err=>console.log(err));
+    });
 
+    socket.on('sumar-puntos',(usuario,pieza)=>{
+        sala.sumarpuntos(usuario,pieza)
+        .then(result=>console.log("exito"))
+        .catch(err=>console.log(err))
+
+    });
+    
+    socket.on('partida-terminada',(uid,sala_usuario,sala_id,callback) => {
+        sala.resultadofinal(sala_id)
+        .then(result=>{
+            console.log(result);
+            callback(result);
+            socket.to(uid).emit('resultado-final',result)
+        })
+        .catch(err=>console.log(err))
+
+    });
+
+    socket.on('obtener-resultados',(uid) => {
+        console.log(usuarios);
+        socket.to( uid ).emit( 'resultados', usuarios);
+    });
+
+    socket.on('obtener-llave',(uid,callback) => {
+        sala.crearsala({llave:uid})
+            .then(result=>callback(result))
+            .catch(err=>console.log(err));
+
+        socket.join( uid );
     });
 
     /* puzzle primera version */
@@ -96,22 +120,6 @@ const socketController = async( socket = new Socket(), io ) => {
     socket.on('terminar-partida',({uid})=>{
         if ( uid ) {
             socket.to( uid ).emit( 'partida-terminada');
-        }
-    });
-    socket.on('terminar-partida2',({uid})=>{
-        if ( uid ) {
-            socket.to( uid ).emit( 'partida-terminada');
-        }
-    });
-
-    socket.on('pasar-usuario',({uid,nombre,aciertos})=>{
-        if ( uid ) {
-            socket.to( uid ).emit( 'recibiendo-jugadores', {nombre,aciertos});
-        }
-    });
-    socket.on('pasar-usuario2',({uid,nombre,aciertos})=>{
-        if ( uid ) {
-            socket.to( uid ).emit( 'recibiendo-jugadores2', {nombre,aciertos});
         }
     });
 
