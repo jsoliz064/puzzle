@@ -34,6 +34,9 @@ body {
     padding: 3vmin;
     font: normal normal bold 10px/normal "Comic Sans MS", cursive, sans-serif;
 }
+.dimensiones{
+    font: normal normal bold 10px/normal "Comic Sans MS", cursive, sans-serif;
+}
 
 
 @keyframes changecolor {
@@ -197,13 +200,15 @@ body {
     border: none;
     border-radius: 4vmin;
 } */
+
+
 @media screen and (min-width: 260px) {
     .menu {
         height: 200px;
         width: 200px;
     }
     .footer {
-        height: 90px;
+        height: 70px;
     }
     .titulo {
         font: normal normal bold 10px/normal "Comic Sans MS", cursive, sans-serif;
@@ -215,6 +220,17 @@ body {
     .tabla {
         height: 100px;
         width: 100px;
+    }
+    .filafooter {
+        height: 10px;
+    }
+    
+    .icon {
+        width: 10px;
+        height: 10px;
+    }
+    .dimensiones{
+        font: normal normal bold 6px/normal "Comic Sans MS", cursive, sans-serif;
     }
 
 }
@@ -237,6 +253,12 @@ body {
     .tabla {
         height: 130px;
     }
+    .filafooter {
+        height: 25px;
+    }
+    .dimensiones{
+        font: normal normal bold 8px/normal "Comic Sans MS", cursive, sans-serif;
+    }
 }
 
 @media screen and (min-width: 450px) {
@@ -256,6 +278,9 @@ body {
     }
     .tabla {
         height: 150px;
+    }
+    .dimensiones{
+        font: normal normal bold 10px/normal "Comic Sans MS", cursive, sans-serif;
     }
 }
 
@@ -277,6 +302,10 @@ body {
     .tabla {
         height: 190px;
     }
+    .dimensiones{
+        font: normal normal bold 11px/normal "Comic Sans MS", cursive, sans-serif;
+    }
+
 }
 
 @media screen and (min-width: 650px) {
@@ -294,6 +323,16 @@ body {
     .icon-titulo{
         width: 40px;
         height: 40px;
+    }
+    .dimensiones{
+        font: normal normal bold 12px/normal "Comic Sans MS", cursive, sans-serif;
+    }
+    .icon {
+        width: 20px;
+        height: 20px;
+    }
+    .filafooter {
+        height: 30px;
     }
 }
 
