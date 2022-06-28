@@ -33,6 +33,10 @@ let sala_usuario=null;
 let aciertos=null;
 let jugadores=null;
 
+let menux=null;
+let menuy=null;
+let menuw=null;
+let menuh=null;
 //initializePieces(row.getvalue, col.getvalue);
 
 let keys = {
@@ -93,12 +97,19 @@ function main () {
     i=0;
     txtfila     = document.getElementById("filas");
     txtcolumna     = document.getElementById("columnas");
+    /* MENU RESPONSIVO */
+    const divmenu=document.getElementById("menuItems");
+    const posicion=divmenu.getBoundingClientRect();
+    const divnav=document.getElementById("nav");
+    menuw=divmenu.clientWidth;;
+    menuh=divmenu.clientHeight;
     winWidth= window.innerWidth;
     winHeight= window.innerHeight;
+    menux=posicion.x;
+    menuy=posicion.y-divnav.clientHeight;
+
     /* SOCKETS */
-    
     socket=io();
-    
     
     socket.on('connect', () => {
       
@@ -132,12 +143,16 @@ function main () {
             let piezas=[];
             piezas=piezas.concat(PIECES);
             const img=i;
-            socket.emit('dimencionar',({uid,row,col,wx,wy,piezas,img}));
+            const mx=menux;
+            const my=menuy;
+            const mw=menuw;
+            const mh=menuh;
+            socket.emit('dimencionar',({uid,row,col,wx,wy,piezas,img,mx,my,mw,mh}));
         });
     }
    
 
-    socket.on('dimencionado',({row,col,wx,wy,piezas,img})=>{
+    socket.on('dimencionado',({row,col,wx,wy,piezas,img,mx,my,mw,mh})=>{
         if (img==null){
             img=0;
         }
@@ -147,6 +162,12 @@ function main () {
         if (wx!=null && wy!=null){
             winWidth=wx;
             winHeight=wy;
+        }
+        if (mx!=null && my!=null && mw!=null && mh!=null){
+            menux=mx;
+            menuy=my;
+            menuw=mw;
+            menuh=mh;
         }
         const imagen=imagenes[i];
         IMG=new Image ();
@@ -612,7 +633,8 @@ function getPressedPieceByColor (loc,color) {
 }
 
 function handleResize () {
-    
+    divmenu=document.getElementById("menuItems");
+
     CANVAS.width = winWidth;
     CANVAS.height = winHeight;
     
@@ -624,12 +646,13 @@ function handleResize () {
         winWidth / IMG.width, 
         winHeight / IMG.height
     );
-    divmenu=document.getElementById("menuItems");
-    SIZE.width = divmenu.clientWidth;
-    SIZE.height = divmenu.clientHeight;
-
-    SIZE.x = winWidth/2-SIZE.width/2;
-    SIZE.y = winHeight/2-SIZE.height/2;
+    
+    SIZE.width = menuw;
+    SIZE.height = menuh;
+    
+    SIZE.x = menux;
+    SIZE.y = menuy;
+    
 }
 
 

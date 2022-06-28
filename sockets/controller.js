@@ -66,9 +66,9 @@ const socketController = async( socket = new Socket(), io ) => {
         }
     });
 
-    socket.on('dimencionar', ({ uid, row,col,wx,wy,piezas,img}) => {
+    socket.on('dimencionar', ({ uid, row,col,wx,wy,piezas,img,mx,my,mw,mh}) => {
         if ( uid ) {
-            socket.to( uid ).emit( 'dimencionado', {row,col,wx,wy,piezas,img});
+            socket.to( uid ).emit( 'dimencionado', {row,col,wx,wy,piezas,img,mx,my,mw,mh});
         }
     });
 
