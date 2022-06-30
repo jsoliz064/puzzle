@@ -9,36 +9,6 @@ body {
     animation: changecolor 30s infinite;
 }
 
-.icon {
-    width: 15px;
-    height: 15px;
-}
-.icon-titulo{
-    width: 15px;
-    height: 15px;
-}
-
-.footer {
-    text-align: center;
-    width: 100%;
-    bottom: 0px;
-    height: 100px;
-    position: absolute;
-}
-
-.filafooter {
-    height: 25px;
-}
-
-.compartir {
-    padding: 3vmin;
-    font: normal normal bold 10px/normal "Comic Sans MS", cursive, sans-serif;
-}
-.dimensiones{
-    font: normal normal bold 10px/normal "Comic Sans MS", cursive, sans-serif;
-}
-
-
 @keyframes changecolor {
     0% {
         background-color: rgb(22, 21, 22);
@@ -68,6 +38,40 @@ body {
         background-color: rgb(22, 21, 22);
     }
 }
+.icon {
+    width: 15px;
+    height: 15px;
+}
+.icon-titulo{
+    width: 15px;
+    height: 15px;
+}
+
+.footer {
+    text-align: center;
+    width: 100%;
+    bottom: 0px;
+    height: 100px;
+    position: absolute;
+}
+
+.filafooter {
+    height: 25px;
+}
+
+.compartir {
+    padding: 3vmin;
+    font: normal normal bold 10px/normal "Comic Sans MS", cursive, sans-serif;
+}
+.dimensiones{
+    font: normal normal bold 10px/normal "Comic Sans MS", cursive, sans-serif;
+}
+
+.btn-img{
+    border:none;
+    background:none;
+}
+
 
 .centrar-horizontal {
     width: 100%;
@@ -173,33 +177,6 @@ body {
     border: none;
     border-radius: 2vmin;
 }
-
-.cambiar-derecha {
-    background: rgb(0, 255, 76);
-    color: rgb(253, 253, 253);
-    margin-right: -80px;
-    height: 100%;
-    position: absolute;
-}
-
-.cambiar-izquierda {
-    background: rgb(0, 255, 76);
-    color: rgb(253, 253, 253);
-    margin-left: -80px;
-    height: 100%;
-    width:50px;
-    position: absolute;
-}
-
-/* button {
-    font-size: 7vmin;
-    background: rgb(37, 96, 224);
-    color: white;
-    cursor: pointer;
-    transition: 0.3s;
-    border: none;
-    border-radius: 4vmin;
-} */
 
 
 @media screen and (min-width: 260px) {
@@ -337,10 +314,7 @@ body {
 }
 
 
-button:hover {
-    background: rgb(255, 0, 0);
-    color: rgb(253, 253, 253);
-}
+
 
 button:disabled {
     background: lightgray;

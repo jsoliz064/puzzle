@@ -51,12 +51,23 @@
                             <input class="dimension" id="columnas" type="number" value="3" onchange="setDifficulty()">
                         </div>
                     </div>
-                    <div class="row d-flex justify-content-center mt-4">
+                    <div class="row d-flex justify-content-center mt-2">
                         <input class="nickname" id="txtjugador" placeholder="Nombre del jugador" type="text">
                     </div>
-                    <div class="row d-flex justify-content-center mt-4">
+                    <div class="row d-flex justify-content-center mt-2">
                             <button id="btnstart" class="btn-start" onclick="restart()">Empezar</button>
                     </div>
+                    <div class="row d-flex justify-content-center mt-2">
+                        <div class="col d-flex justify-content-center">
+                            <button onclick="atras()" class="carousel-control-prev-icon btn-img"></button>
+                        </div>
+                        <div class="col d-flex justify-content-center">
+                            <p class="dimensiones">Imagen</p>
+                        </div>
+                        <div class="col d-flex justify-content-center">
+                            <button onclick="siguiente()" class="carousel-control-next-icon btn-img"></button>
+                        </div>
+                </div>
                 </div>
             </div>
             <!-- footer -->
@@ -91,12 +102,7 @@
                     </div>
                 </div>
             </div>
-            <button onclick="atras()" id="btnatras" class="carousel-control-prev cambiar-izquierda" type="button">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            </button>
-            <button onclick="siguiente()" id="btnsiguiente" class="carousel-control-next cambiar-derecha" type="button">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            </button>
+            
         </div>
 
         <div id="endScreen" class="menu" style="display:none;">
